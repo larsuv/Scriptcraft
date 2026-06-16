@@ -3,14 +3,14 @@ FROM node:lts-alpine
 # Create app directory
 WORKDIR /root/scriptcraft
 
-# Download openjdk 17
-RUN apk add --no-cache openjdk17
+# Download openjdk 25
+RUN apk add --no-cache openjdk25
 
 # Make minecraft folder
 RUN mkdir minecraft
 
-# Download latest minecraft server jar to ./minecraft/server.jar ( 1.19.4 )
-RUN wget -O minecraft/server.jar https://piston-data.mojang.com/v1/objects/8f3112a1049751cc472ec13e397eade5336ca7ae/server.jar
+# Download latest minecraft server jar to ./minecraft/server.jar ( 26.1.2 )
+RUN wget -O minecraft/server.jar https://piston-data.mojang.com/v1/objects/97ccd4c0ed3f81bbb7bfacddd1090b0c56f9bc51/server.jar
 
 # Install app dependencies
 COPY package*.json ./

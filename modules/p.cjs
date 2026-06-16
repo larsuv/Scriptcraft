@@ -52,18 +52,18 @@ module.exports = {
 		}
 
 		hasInit = true;
-		s(`execute at @e[name=${this.Drone.owner}] run summon painting ~ ~ ~ {CustomName:"{\\\"text\\\":\\\"Quinten\\\"}",Motive:"minecraft:plant"}`);
+		s(`execute at @e[name=${this.Drone.owner}] run summon painting ~ ~ ~ {CustomName:"Quinten",Motive:"minecraft:plant"}`);
 
 		s(
 			`execute at @e[type=minecraft:painting,name=Quinten] run summon armor_stand ~ ~ ~0.5 {NoGravity:1b,Invulnerable:1b,Small:0b,Invisible:1b,NoBasePlate:1b,Rotation:[${
 				(this.Drone.rotation + 2) * 90
-			}F,0F],ArmorItems:[{},{},{},{}],CustomName:"{\\"text\\":\\"${this.Drone.name}\\"}"}`,
+			}F,0F],ArmorItems:[{},{},{},{}],CustomName:"${this.Drone.name}"}`,
 		);
 
 		s(
 			`execute at @e[type=minecraft:painting,name=Quinten] run summon armor_stand ~ ~ ~0.5 {NoGravity:1b,Invulnerable:1b,Small:0b,Invisible:1b,NoBasePlate:1b,Rotation:[${
 				(this.Drone.rotation + 2) * 90
-			}F,0F],ArmorItems:[{},{},{},{}],CustomName:"{\\"text\\":\\"Start-${this.Drone.name}\\"}"}`,
+			}F,0F],ArmorItems:[{},{},{},{}],CustomName:"Start-${this.Drone.name}"}`,
 		);
 
 		if (slowBuilding) {
