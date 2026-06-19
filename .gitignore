@@ -117,9 +117,12 @@ ops.json
 server.properties
 crash-reports
 
-#Scriptcraft
+# Scriptcraft
 .command.json
 public/*
 !public/readme.md
 !public/examples
 .currentmc
+
+# MacOS
+.DS_Store

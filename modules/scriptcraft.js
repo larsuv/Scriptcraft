@@ -9,9 +9,9 @@ import file from "./file.js";
 const prefix = "!sc ";
 const player = {};
 
-const sendMessage = (playerName = "@a", msg = '""', color = "white") => {
+const sendMessage = (playerName = "@a", msg = '""', color = "white", toCopy = '') => {
 	msg = JSON.stringify(msg);
-	process.send(`tellraw ${playerName} {"text":${msg},"color":"${color}","clickEvent":{"action":"copy_to_clipboard","value":${msg}}}`);
+	process.send(`tellraw ${playerName} {"text":${msg},"color":"${color}","click_event":{"action":"copy_to_clipboard","value":"${toCopy}"}}`);
 };
 
 process.on("message", (msg) => {
@@ -26,9 +26,15 @@ process.on("message", (msg) => {
 	if (msg.endsWith(" joined the game")) {
 		const name = msg.split("]: ").pop().replace(" joined the game", "");
 		sendMessage(name, "Welcome in ScriptCraft!", "green");
-		sendMessage(name, `Use '${prefix}COMMANDNAME' to build.`, "green");
-		sendMessage(name, `Use '${prefix}create js COMMANDNAME' to create a new project.`, "green");
-		sendMessage(name, `Use '${prefix}kill' to kill all code instances.`, "green");
+		sendMessage(name, `Use '${prefix}COMMANDNAME' to build.`, "green", `${prefix}COMMANDNAME`);
+		sendMessage(name, `Use '${prefix}create js COMMANDNAME' to create a new project.`, "green", `${prefix}create js COMMANDNAME`);
+		sendMessage(name, `Use '${prefix}kill' to kill all code instances.`, "green", `${prefix}kill`);
+		process.send("gamerule advance_time false");
+		process.send("gamerule advance_weather false");
+		process.send("time set 6000");
+		process.send("gamerule keep_inventory true");
+		process.send("gamerule command_block_output false");
+		process.send("gamerule spawn_mobs false");
 	}
 
 	const chatMessage = msg.match(/: <.+?> /);
@@ -227,9 +233,4 @@ process.on("message", (msg) => {
 	}
 });
 
-process.send("gamerule doDaylightCycle false");
-process.send("gamerule doWeatherCycle false");
-process.send("time set 6000");
-process.send("gamerule keepInventory true");
-process.send("gamerule commandBlockOutput false");
-process.send("gamerule doMobSpawning false");
+
