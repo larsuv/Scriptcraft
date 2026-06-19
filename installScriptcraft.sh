@@ -4,7 +4,7 @@
 docker volume create --name public -d local -o o=bind -o type=none -o device=$(pwd)/public
 
 # remove old / unused containers
-docker rm -f $(docker ps -a -q)
+docker rm -f $(docker ps -a -q -f name=scriptcraft)
 
 # build the image from the Dockerfile (name it ScriptCraft)
 docker build -t scriptcraft .
