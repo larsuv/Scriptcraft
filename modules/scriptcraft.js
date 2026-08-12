@@ -29,6 +29,9 @@ process.on("message", (msg) => {
 		sendMessage(name, `Use '${prefix}COMMANDNAME' to build.`, "green", `${prefix}COMMANDNAME`);
 		sendMessage(name, `Use '${prefix}create js COMMANDNAME' to create a new project.`, "green", `${prefix}create js COMMANDNAME`);
 		sendMessage(name, `Use '${prefix}kill' to kill all code instances.`, "green", `${prefix}kill`);
+		
+	}
+	if (msg.endsWith("All dimensions are saved")) {
 		process.send("gamerule advance_time false");
 		process.send("gamerule advance_weather false");
 		process.send("time set 6000");
@@ -36,7 +39,6 @@ process.on("message", (msg) => {
 		process.send("gamerule command_block_output false");
 		process.send("gamerule spawn_mobs false");
 	}
-
 	const chatMessage = msg.match(/: <.+?> /);
 	if (!chatMessage) {
 		return;
@@ -232,5 +234,3 @@ process.on("message", (msg) => {
 		}
 	}
 });
-
-
