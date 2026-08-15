@@ -11,6 +11,10 @@ const player = {};
 
 const sendMessage = (playerName = "@a", msg = '""', color = "white", toCopy = '') => {
 	msg = JSON.stringify(msg);
+	if (toCopy === '') {
+		process.send(`tellraw ${playerName} {"text":${msg},"color":"${color}"}`);
+		return;
+	}
 	process.send(`tellraw ${playerName} {"text":${msg},"color":"${color}","click_event":{"action":"copy_to_clipboard","value":"${toCopy}"}}`);
 };
 
