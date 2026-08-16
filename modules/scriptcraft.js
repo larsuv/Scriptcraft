@@ -156,23 +156,63 @@ process.on("message", (msg) => {
 		sendMessage(playerName, `Scripts in "${folderName}": ${scripts.join(", ")}`, "green");
 		return;
 	}
-
-	if (playerCommand.startsWith("shadowban ")) {
-		const shadowbanPlayer = playerCommand.split(" ")[1];
-
+	
+	const shadowban = function (playerName = "Server", playerCommand = "", isOp = false) {
 		if (!isOp) {
-			console.log(JSON.stringify(ops));
 			sendMessage(playerName, `You are not allowed to shadowban players!`, "red");
 			return;
 		}
 
-		if (!shadowbanPlayer) {
+		const shadowbanPlayerSelector = playerCommand.split(" ")[1];
+		var shadowbanPlayer = shadowbanPlayerSelector;
+
+		if (!shadowbanPlayerSelector) {
 			sendMessage(playerName, `Please specify a player to shadowban!`, "red");
+			return;
+		}
+
+		if (shadowbanPlayerSelector.includes("@")) {
+			if (shadowbanPlayerSelector === "@s") {
+				sendMessage(playerName, `You cannot shadowban yourself!`, "red");
+				return;
+			}
+			if (shadowbanPlayerSelector === "@a" || shadowbanPlayerSelector === "@e") {
+				for (const name of Object.keys(player)) {
+					const previousLength = shadowbanned.length;
+					if (!ops.includes(name)) {
+						process.send(`gamemode spectator ${name}`);
+						sendMessage(name, "You are shadowbanned!", "red");
+						sendMessage(playerName, `Shadowbanned player "${name}"!`, "green");
+						shadowbanned.push(name);
+					}
+				}
+				if (shadowbanned.length === previousLength) {
+					sendMessage(playerName, `No players were shadowbanned!`, "red");
+					return;
+				}
+				fs.writeFileSync("./minecraft/shadowbanned.json", JSON.stringify(shadowbanned));
+				return;
+			}
+			if (shadowbanPlayerSelector === "@p") {
+				shadowbanPlayer = Object.keys(player)[0];
+			}
+			if (shadowbanPlayerSelector === "@r") {
+				shadowbanPlayer = Object.keys(player)[Math.floor(Math.random() * Object.keys(player).length)];
+			}
+		}
+
+		if (shadowbanPlayer === playerName) {
+			sendMessage(playerName, `You cannot shadowban yourself!`, "red");
 			return;
 		}
 
 		if (shadowbanned.includes(shadowbanPlayer)) {
 			sendMessage(playerName, `Player "${shadowbanPlayer}" is already shadowbanned!`, "red");
+			return;
+		}
+
+		if (ops.includes(shadowbanPlayer)) {
+			sendMessage(playerName, `Player "${shadowbanPlayer}" is an operator and cannot be shadowbanned!`, "red");
 			return;
 		}
 
@@ -184,17 +224,43 @@ process.on("message", (msg) => {
 		return;
 	}
 
+	if (playerCommand.startsWith("shadowban ")) {
+		shadowban(playerName, playerCommand, isOp);
+		return;
+	}
+
 	if (playerCommand.startsWith("unshadowban ")) {
-		const unshadowbanPlayer = playerCommand.split(" ")[1];
+		const unshadowbanPlayerSelector = playerCommand.split(" ")[1];
+		var unshadowbanPlayer = unshadowbanPlayerSelector;
 
 		if (!isOp) {
 			sendMessage(playerName, `You are not allowed to unshadowban players!`, "red");
 			return;
 		}
 
-		if (!unshadowbanPlayer) {
+		if (!unshadowbanPlayerSelector) {
 			sendMessage(playerName, `Please specify a player to unshadowban!`, "red");
 			return;
+		}
+
+		if (unshadowbanPlayerSelector.includes("@")) {
+			if (unshadowbanPlayerSelector === "@a" || unshadowbanPlayerSelector === "@e") {
+				if (shadowbanned.length === 0) {
+					sendMessage(playerName, `No players are shadowbanned!`, "red");
+					return;
+				}
+				shadowbanned = [];
+				process.send(`gamemode creative @a`);
+				sendMessage(playerName, `Unshadowbanned all players!`, "green");
+				fs.writeFileSync("./minecraft/shadowbanned.json", JSON.stringify(shadowbanned));
+				return;
+			}
+			if (unshadowbanPlayerSelector === "@p") {
+				unshadowbanPlayer = Object.keys(player)[0];
+			}
+			if (unshadowbanPlayerSelector === "@r") {
+				unshadowbanPlayer = Object.keys(player)[Math.floor(Math.random() * Object.keys(player).length)];
+			}
 		}
 		
 		if (!shadowbanned.includes(unshadowbanPlayer)) {
@@ -306,7 +372,12 @@ process.on("message", (msg) => {
 			});
 
 			proc.on("message", (msg) => {
-				process.send(msg.toString());
+				if (msg.includes("shadowban")) {
+					shadowban("Server", msg, true);
+					return;
+				} else {
+					process.send(msg.toString());
+				}
 			});
 		} else {
 			proc = spawn(type, [script, JSON.stringify(scriptcraftArguments), ...playerArguments], {

@@ -26,18 +26,17 @@ let s = (data) => {
 let conditions = "";
 
 let checkblock = (block) => {
-	//return block; // comment this out if you want to check the block
+	return block; // comment this out if you want to check the block
 
-	if (isOp) {
-		return block;
-	}
-
-	const illegal = ["tnt", "lava", "water", "command_block", "repeating_command_block", "chain_command_block", "structure_block", "structure_void"];
-	for (const illi of illegal) {
-		if (block.includes(illi)) {
-			s(`say "${command.user}" attempted to spawn "${illi}" using ${command.owner}/${command.name}`);
-			s(`kick ${command.user} Illegal block usage.`);
-			process.exit(1);
+	if (!command.isOp) {
+		const illegal = ["tnt", "lava", "water", "command_block", "repeating_command_block", "chain_command_block", "structure_block", "jigsaw", "spawner", "end_portal_frame", "end_gateway", "end_portal", "fire", "nether_portal"];
+		for (const illi of illegal) {
+			if (block.includes(illi)) {
+				conditions = "";
+				s(`say "${command.user}" attempted to spawn "${illi}" using ${command.owner}/${command.name}`);
+				s(`shadowban ${command.user}`);
+				block = "air";
+			}
 		}
 	}
 	return block;
