@@ -123,6 +123,7 @@ public/*
 !public/readme.md
 !public/examples
 .currentmc
+shadowbanned.json
 
 # MacOS
 .DS_Store

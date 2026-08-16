@@ -9,8 +9,14 @@ import file from "./file.js";
 const prefix = "!sc ";
 const player = {};
 
+if (!fs.existsSync("./minecraft/shadowbanned.json")) {
+	fs.writeFileSync("./minecraft/shadowbanned.json", "[]");
+}
+const shadowbanned = JSON.parse(fs.readFileSync("./minecraft/shadowbanned.json"));
+
 const sendMessage = (playerName = "@a", msg = '""', color = "white", toCopy = '') => {
 	msg = JSON.stringify(msg);
+	
 	if (toCopy === '') {
 		process.send(`tellraw ${playerName} {"text":${msg},"color":"${color}"}`);
 		return;
@@ -27,13 +33,46 @@ process.on("message", (msg) => {
 
 	console.log(msg);
 
+	if (!fs.existsSync("./minecraft/ops.json")) {
+		fs.writeFileSync("./minecraft/ops.json", "[]");
+	}
+	const ops = JSON.parse(fs.readFileSync("./minecraft/ops.json")).map((op) => op.name);
+
 	if (msg.endsWith(" joined the game")) {
 		const name = msg.split("]: ").pop().replace(" joined the game", "");
 		sendMessage(name, "Welcome in ScriptCraft!", "green");
 		sendMessage(name, `Use '${prefix}COMMANDNAME' to build.`, "green", `${prefix}COMMANDNAME`);
 		sendMessage(name, `Use '${prefix}create js COMMANDNAME' to create a new project.`, "green", `${prefix}create js COMMANDNAME`);
 		sendMessage(name, `Use '${prefix}kill' to kill all code instances.`, "green", `${prefix}kill`);
-		
+		if (shadowbanned.includes(name)) {
+			process.send(`gamemode ${name} spectator`);
+			sendMessage(name, "You are shadowbanned!", "red");
+			return;
+		}
+		if (ops.length === 0) {
+			process.send(`op ${name}`);
+			sendMessage(name, "As there were no previous operators, you are now an operator!", "dark_blue");
+			ops.push(name);
+		}
+		if (ops.includes(name)) {
+			sendMessage(name, `Use '${prefix}shadowban PLAYERNAME' to shadowban a player.`, "blue", `${prefix}shadowban PLAYERNAME`);
+			sendMessage(name, `Use '${prefix}unshadowban PLAYERNAME' to unshadowban a player.`, "blue", `${prefix}unshadowban PLAYERNAME`);
+			sendMessage(name, `Use '${prefix}kill all' to kill all code instances.`, "blue", `${prefix}kill all`);
+			if (ops.length > 0) {
+				if (ops.length === 1) {
+					sendMessage(name, `Only you, ${ops[0]}, are an operator.`, "blue");
+					return;
+				}
+				sendMessage(name, `${ops.join(", ")} are operators.`, "blue");
+			}
+			if (shadowbanned.length > 0) {
+				if (shadowbanned.length === 1) {
+					sendMessage(name, `${shadowbanned[0]} is shadowbanned.`, "blue");
+					return;
+				}
+				sendMessage(name, `${shadowbanned.join(", ")} are shadowbanned.`, "blue");
+			}
+		}
 	}
 	if (msg.endsWith("All dimensions are saved")) {
 		process.send("gamerule advance_time false");
@@ -50,6 +89,8 @@ process.on("message", (msg) => {
 
 	const playerName = chatMessage[0].replace(": <", "").replace("> ", "");
 	const playerMessage = msg.split(chatMessage[0])[1];
+
+	const isOp = ops.includes(playerName);
 
 	if (!playerMessage.startsWith(prefix)) {
 		return;
@@ -91,6 +132,10 @@ process.on("message", (msg) => {
 	}
 
 	if (playerCommand === "kill all") {
+		if (!isOp) {
+			sendMessage(playerName, `You are not allowed to kill all code instances!`, "red");
+			return;
+		}
 		for (const name of Object.keys(player)) {
 			for (let i in player[name].processes) {
 				player[name].processes[i].kill("SIGINT");
@@ -109,6 +154,62 @@ process.on("message", (msg) => {
 
 		const scripts = fs.readdirSync(path.join("./public/", folderName));
 		sendMessage(playerName, `Scripts in "${folderName}": ${scripts.join(", ")}`, "green");
+		return;
+	}
+
+	if (playerCommand.startsWith("shadowban ")) {
+		const shadowbanPlayer = playerCommand.split(" ")[1];
+
+		if (!isOp) {
+			console.log(JSON.stringify(ops));
+			sendMessage(playerName, `You are not allowed to shadowban players!`, "red");
+			return;
+		}
+
+		if (!shadowbanPlayer) {
+			sendMessage(playerName, `Please specify a player to shadowban!`, "red");
+			return;
+		}
+
+		if (shadowbanned.includes(shadowbanPlayer)) {
+			sendMessage(playerName, `Player "${shadowbanPlayer}" is already shadowbanned!`, "red");
+			return;
+		}
+
+		process.send(`gamemode spectator ${shadowbanPlayer}`);
+		sendMessage(shadowbanPlayer, "You are shadowbanned!", "red");
+		sendMessage(playerName, `Shadowbanned player "${shadowbanPlayer}"!`, "green");
+		shadowbanned.push(shadowbanPlayer);
+		fs.writeFileSync("./minecraft/shadowbanned.json", JSON.stringify(shadowbanned));
+		return;
+	}
+
+	if (playerCommand.startsWith("unshadowban ")) {
+		const unshadowbanPlayer = playerCommand.split(" ")[1];
+
+		if (!isOp) {
+			sendMessage(playerName, `You are not allowed to unshadowban players!`, "red");
+			return;
+		}
+
+		if (!unshadowbanPlayer) {
+			sendMessage(playerName, `Please specify a player to unshadowban!`, "red");
+			return;
+		}
+		
+		if (!shadowbanned.includes(unshadowbanPlayer)) {
+			sendMessage(playerName, `Player "${unshadowbanPlayer}" is not shadowbanned!`, "red");
+			return;
+		}
+
+		process.send(`gamemode creative ${unshadowbanPlayer}`);
+		sendMessage(unshadowbanPlayer, "You are no longer shadowbanned!", "green");
+		sendMessage(playerName, `Unshadowbanned player "${unshadowbanPlayer}"!`, "green");
+		const index = shadowbanned.indexOf(unshadowbanPlayer);
+		if (index > -1) {
+			shadowbanned.splice(index, 1);
+		}
+		fs.writeFileSync("./minecraft/shadowbanned.json", JSON.stringify(shadowbanned));
 		return;
 	}
 
@@ -160,6 +261,7 @@ process.on("message", (msg) => {
 			script: playerFunction,
 			player: playerName,
 			args: playerArguments,
+			isOp: isOp,
 		};
 
 		fs.writeFileSync(path.join("./public/", folderName, playerFunction, ".command.json"), JSON.stringify(scriptcraftArguments));
@@ -234,7 +336,7 @@ process.on("message", (msg) => {
 		try {
 			sendMessage(playerName, JSON.stringify(eval(playerCommand)), "green");
 		} catch (err) {
-			sendMessage(playerName, err, "red");
+			sendMessage(playerName, err.message, "red");
 		}
 	}
 });

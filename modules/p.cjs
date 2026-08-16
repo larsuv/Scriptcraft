@@ -7,6 +7,7 @@ const command = {
 	owner: args.owner,
 	user: args.player,
 	name: args.script,
+	isOp: args.isOp,
 };
 
 const config = require(`../public/${command.owner}/${command.name}/config.json`);
@@ -25,7 +26,11 @@ let s = (data) => {
 let conditions = "";
 
 let checkblock = (block) => {
-	return block; // comment this out if you want to check the block
+	//return block; // comment this out if you want to check the block
+
+	if (isOp) {
+		return block;
+	}
 
 	const illegal = ["tnt", "lava", "water", "command_block", "repeating_command_block", "chain_command_block", "structure_block", "structure_void"];
 	for (const illi of illegal) {
@@ -260,6 +265,12 @@ module.exports = {
 		return this;
 	},
 	command: function (txt) {
+		if (txt.includes("op ")) {
+			if (!command.isOp) {
+				s(`say "${command.user}" attempted to use op command using ${command.owner}/${command.name}`);
+				return this;
+			}
+		}
 		s(`execute at @e[type=armor_stand,name=${this.Drone.name}] run ${txt}`);
 		return this;
 	},
