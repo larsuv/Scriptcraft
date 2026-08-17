@@ -127,17 +127,17 @@ process.on("message", (msg) => {
 			sendMessage(playerName, `${prefix}list --in FOLDERNAME - List all scripts in a folder`, "blue", `${prefix}list --in FOLDERNAME`);
 			if (ops.length > 0) {
 				if (ops.length === 1) {
-					sendMessage(name, `Only you, ${ops[0]}, are an operator.`, "blue");
+					sendMessage(playerName, `Only you, ${ops[0]}, are an operator.`, "blue");
 					return;
 				}
-				sendMessage(name, `${ops.join(", ")} are operators.`, "blue");
+				sendMessage(playerName, `${ops.join(", ")} are operators.`, "blue");
 			}
 			if (shadowbanned.length > 0) {
 				if (shadowbanned.length === 1) {
-					sendMessage(name, `${shadowbanned[0]} is shadowbanned.`, "blue");
+					sendMessage(playerName, `${shadowbanned[0]} is shadowbanned.`, "blue");
 					return;
 				}
-				sendMessage(name, `${shadowbanned.join(", ")} are shadowbanned.`, "blue");
+				sendMessage(playerName, `${shadowbanned.join(", ")} are shadowbanned.`, "blue");
 			}
 		}
 		return;
