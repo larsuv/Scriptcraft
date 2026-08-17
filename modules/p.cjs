@@ -54,18 +54,18 @@ module.exports = {
 		}
 
 		hasInit = true;
-		s(`execute at @e[name=${this.Drone.owner}] run summon painting ~ ~ ~ {CustomName:"Quinten",Motive:"minecraft:plant"}`);
+		s(`execute at @e[name=${this.Drone.owner}] run summon painting ~ ~ ~ {CustomName:"${this.Drone.owner}",Motive:"minecraft:plant"}`);
 
 		s(
-			`execute at @e[type=minecraft:painting,name=Quinten] run summon armor_stand ~ ~ ~0.5 {NoGravity:1b,Invulnerable:1b,Small:0b,Invisible:1b,NoBasePlate:1b,Rotation:[${
+			`execute at @e[type=minecraft:painting,name=${this.Drone.owner}] run summon armor_stand ~ ~ ~0.5 {NoGravity:1b,Invulnerable:1b,Small:1b,Invisible:1b,NoBasePlate:1b,Rotation:[${
 				(this.Drone.rotation + 2) * 90
-			}F,0F],ArmorItems:[{},{},{},{}],CustomName:"${this.Drone.name}"}`,
+			}F,0F],equipment:{${config.visualDrone ? 'head: {count: 1, id: "command_block"}' : ''}},CustomName:"${this.Drone.name}"}`,
 		);
 
 		s(
-			`execute at @e[type=minecraft:painting,name=Quinten] run summon armor_stand ~ ~ ~0.5 {NoGravity:1b,Invulnerable:1b,Small:0b,Invisible:1b,NoBasePlate:1b,Rotation:[${
+			`execute at @e[type=minecraft:painting,name=${this.Drone.owner}] run summon armor_stand ~ ~ ~0.5 {NoGravity:1b,Invulnerable:1b,Marker:1b,Invisible:1b,NoBasePlate:1b,Rotation:[${
 				(this.Drone.rotation + 2) * 90
-			}F,0F],ArmorItems:[{},{},{},{}],CustomName:"Start-${this.Drone.name}"}`,
+			}F,0F],equipment:{},CustomName:"Start-${this.Drone.name}"}`,
 		);
 
 		if (slowBuilding) {
@@ -82,7 +82,7 @@ module.exports = {
 
 		conditions = `execute at @e[type=armor_stand,name="Start-${this.Drone.name}"] run `;
 
-		s(`kill @e[type=painting,name=Quinten]`);
+		s(`kill @e[type=painting,name=${this.Drone.owner}]`);
 		return this;
 	},
 	echo: function (msg, color = "white") {
@@ -103,6 +103,32 @@ module.exports = {
 		this.Drone = JSON.parse(JSON.stringify(this.points[name]));
 		s(`tp @e[type=armor_stand,name="${this.Drone.name}"] ~${this.Drone.location[0]} ~${this.Drone.location[1]} ~${this.Drone.location[2]}`);
 		s(`data merge entity @e[type=armor_stand,name="${this.Drone.name}",sort=nearest,limit=1] {Rotation:[${((this.Drone.rotation + 2) % 4) * 90}F,0F]}`);
+		return this;
+	},
+	door: function (door_type, dir){
+		if (dir == null){
+			switch (this.Drone.rotation) {
+			case 0:
+				dir = "north"
+				break;
+			case 1:
+				dir = "east"
+				break;
+			case 2:
+				dir = "south"
+				break;
+			case 3:
+				dir = "west"
+				break;
+		}
+		}
+		const x = parseFloat(this.Drone.initLocation[0]) + parseFloat(this.Drone.location[0]);
+		const y = parseFloat(this.Drone.initLocation[1]) + parseFloat(this.Drone.location[1]);
+		const z = parseFloat(this.Drone.initLocation[2]) + parseFloat(this.Drone.location[2]);
+		if (door_type.includes("door")){
+			s(`fill ~${Math.trunc(x)} ~${Math.trunc(y)} ~${Math.trunc(z)} ~${Math.trunc(x)} ~${Math.trunc(y)} ~${Math.trunc(z)} ${door_type+`[half=lower, facing=${dir}]`}`);
+			s(`fill ~${Math.trunc(x)} ~${Math.trunc(y + 1)} ~${Math.trunc(z)} ~${Math.trunc(x)} ~${Math.trunc(y + 1)} ~${Math.trunc(z)} ${door_type+`[half=upper, facing=${dir}]`}`);
+		}
 		return this;
 	},
 	box: function (block, rechts, boven, diepte) {
