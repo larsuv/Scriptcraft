@@ -128,16 +128,16 @@ process.on("message", (msg) => {
 			if (ops.length > 0) {
 				if (ops.length === 1) {
 					sendMessage(playerName, `Only you, ${ops[0]}, are an operator.`, "blue");
-					return;
+				} else {
+					sendMessage(playerName, `Operators: ${ops.join(", ")}.`, "blue");
 				}
-				sendMessage(playerName, `${ops.join(", ")} are operators.`, "blue");
 			}
 			if (shadowbanned.length > 0) {
 				if (shadowbanned.length === 1) {
 					sendMessage(playerName, `${shadowbanned[0]} is shadowbanned.`, "blue");
-					return;
+				} else {
+					sendMessage(playerName, `${shadowbanned.join(", ")} are shadowbanned.`, "blue");
 				}
-				sendMessage(playerName, `${shadowbanned.join(", ")} are shadowbanned.`, "blue");
 			}
 		}
 		return;
