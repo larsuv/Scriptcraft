@@ -43,7 +43,7 @@ process.on("message", (msg) => {
 		sendMessage(name, "Welcome in ScriptCraft!", "green");
 		sendMessage(name, `Use '${prefix}COMMANDNAME' to build.`, "green", `${prefix}COMMANDNAME`);
 		sendMessage(name, `Use '${prefix}create js COMMANDNAME' to create a new project.`, "green", `${prefix}create js COMMANDNAME`);
-		sendMessage(name, `Use '${prefix}kill' to kill all code instances.`, "green", `${prefix}kill`);
+		sendMessage(name, `Use '${prefix}help' to see all commands.`, "green", `${prefix}help`);
 		if (shadowbanned.includes(name)) {
 			process.send(`gamemode ${name} spectator`);
 			sendMessage(name, "You are shadowbanned!", "red");
@@ -54,25 +54,7 @@ process.on("message", (msg) => {
 			sendMessage(name, "As there were no previous operators, you are now an operator!", "dark_blue");
 			ops.push(name);
 		}
-		if (ops.includes(name)) {
-			sendMessage(name, `Use '${prefix}shadowban PLAYERNAME' to shadowban a player.`, "blue", `${prefix}shadowban PLAYERNAME`);
-			sendMessage(name, `Use '${prefix}unshadowban PLAYERNAME' to unshadowban a player.`, "blue", `${prefix}unshadowban PLAYERNAME`);
-			sendMessage(name, `Use '${prefix}kill all' to kill all code instances.`, "blue", `${prefix}kill all`);
-			if (ops.length > 0) {
-				if (ops.length === 1) {
-					sendMessage(name, `Only you, ${ops[0]}, are an operator.`, "blue");
-					return;
-				}
-				sendMessage(name, `${ops.join(", ")} are operators.`, "blue");
-			}
-			if (shadowbanned.length > 0) {
-				if (shadowbanned.length === 1) {
-					sendMessage(name, `${shadowbanned[0]} is shadowbanned.`, "blue");
-					return;
-				}
-				sendMessage(name, `${shadowbanned.join(", ")} are shadowbanned.`, "blue");
-			}
-		}
+		
 	}
 	if (msg.endsWith("All dimensions are saved")) {
 		process.send("gamerule advance_time false");
@@ -109,6 +91,10 @@ process.on("message", (msg) => {
 
 	let folderName = playerName;
 	if (playerArgument["in"]) {
+		if (!isOp) {
+			sendMessage(playerName, `You are not allowed to use the "--in" parameter!`, "red");
+			return;
+		}
 		const folder = playerArgument["in"].match(/([a-zA-Z_\-0-9])\w+/);
 		if (!folder) {
 			sendMessage(playerName, `Illegal folder for "--in" parameter!`, "red");
@@ -121,6 +107,40 @@ process.on("message", (msg) => {
 		player[playerName] = {
 			processes: [],
 		};
+	}
+
+	if (playerCommand === "help") {
+		sendMessage(playerName, `Available commands:`, "green");
+		sendMessage(playerName, `${prefix}help - Show this message`, "green", `${prefix}help`);
+		sendMessage(playerName, `${prefix}kill - Kill all code instances for yourself`, "green", `${prefix}kill`);
+		if (!isOp) {
+			sendMessage(playerName, `${prefix}create TEMPLATE SCRIPTNAME - Create a new script based on a template`, "green", `${prefix}create js SCRIPTNAME`); //as there is only one template, this is the only valid command for now
+			sendMessage(playerName, `${prefix}COMMANDNAME(ARGUMENTS) - Run a script`, "green", `${prefix}COMMANDNAME(ARGUMENTS)`);
+			sendMessage(playerName, `${prefix}list - List all your scripts`, "green", `${prefix}list`);
+		}
+		if (isOp) {
+			sendMessage(name, `${prefix}shadowban PLAYERNAME' to shadowban a player.`, "blue", `${prefix}shadowban PLAYERNAME`);
+			sendMessage(name, `${prefix}unshadowban PLAYERNAME' to unshadowban a player.`, "blue", `${prefix}unshadowban PLAYERNAME`);
+			sendMessage(name, `${prefix}kill all' to kill all code instances.`, "blue", `${prefix}kill all`);
+			sendMessage(playerName, `${prefix}create TEMPLATE SCRIPTNAME --in FOLDERNAME - Create a new script based on a template`, "blue", `${prefix}create TEMPLATE SCRIPTNAME --in FOLDERNAME`);
+			sendMessage(playerName, `${prefix}COMMANDNAME(ARGUMENTS) --in FOLDERNAME - Run a script`, "blue", `${prefix}COMMANDNAME(ARGUMENTS) --in FOLDERNAME`);
+			sendMessage(playerName, `${prefix}list --in FOLDERNAME - List all scripts in a folder`, "blue", `${prefix}list --in FOLDERNAME`);
+			if (ops.length > 0) {
+				if (ops.length === 1) {
+					sendMessage(name, `Only you, ${ops[0]}, are an operator.`, "blue");
+					return;
+				}
+				sendMessage(name, `${ops.join(", ")} are operators.`, "blue");
+			}
+			if (shadowbanned.length > 0) {
+				if (shadowbanned.length === 1) {
+					sendMessage(name, `${shadowbanned[0]} is shadowbanned.`, "blue");
+					return;
+				}
+				sendMessage(name, `${shadowbanned.join(", ")} are shadowbanned.`, "blue");
+			}
+		}
+		return;
 	}
 
 	if (playerCommand === "kill") {
