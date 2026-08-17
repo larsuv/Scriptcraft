@@ -119,9 +119,9 @@ process.on("message", (msg) => {
 			sendMessage(playerName, `${prefix}list - List all your scripts`, "green", `${prefix}list`);
 		}
 		if (isOp) {
-			sendMessage(name, `${prefix}shadowban PLAYERNAME' to shadowban a player.`, "blue", `${prefix}shadowban PLAYERNAME`);
-			sendMessage(name, `${prefix}unshadowban PLAYERNAME' to unshadowban a player.`, "blue", `${prefix}unshadowban PLAYERNAME`);
-			sendMessage(name, `${prefix}kill all' to kill all code instances.`, "blue", `${prefix}kill all`);
+			sendMessage(playerName, `${prefix}shadowban PLAYERNAME' to shadowban a player.`, "blue", `${prefix}shadowban PLAYERNAME`);
+			sendMessage(playerName, `${prefix}unshadowban PLAYERNAME' to unshadowban a player.`, "blue", `${prefix}unshadowban PLAYERNAME`);
+			sendMessage(playerName, `${prefix}kill all' to kill all code instances.`, "blue", `${prefix}kill all`);
 			sendMessage(playerName, `${prefix}create TEMPLATE SCRIPTNAME --in FOLDERNAME - Create a new script based on a template`, "blue", `${prefix}create TEMPLATE SCRIPTNAME --in FOLDERNAME`);
 			sendMessage(playerName, `${prefix}COMMANDNAME(ARGUMENTS) --in FOLDERNAME - Run a script`, "blue", `${prefix}COMMANDNAME(ARGUMENTS) --in FOLDERNAME`);
 			sendMessage(playerName, `${prefix}list --in FOLDERNAME - List all scripts in a folder`, "blue", `${prefix}list --in FOLDERNAME`);
