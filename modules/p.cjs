@@ -1,5 +1,5 @@
 let hasInit = false;
-let antigriefing = true;
+let antigriefing = false; // set this to true to enable antigriefing and restrict block and command usage
 
 const args = JSON.parse(process.argv[2]);
 
@@ -26,8 +26,6 @@ let s = (data) => {
 let conditions = "";
 
 let checkblock = (block) => {
-	return block; // comment this out if you want to check the block
-
 	if (!command.isOp) {
 		const illegal = ["tnt", "lava", "water", "command_block", "repeating_command_block", "chain_command_block", "structure_block", "jigsaw", "spawner", "end_portal_frame", "end_gateway", "end_portal", "fire", "nether_portal"];
 		for (const illi of illegal) {
@@ -264,11 +262,13 @@ module.exports = {
 		return this;
 	},
 	command: function (txt) {
-		if (txt.includes("op ")) {
-			if (!command.isOp) {
-				s(`say "${command.user}" attempted to use op command using ${command.owner}/${command.name}`);
-				return this;
-			}
+		if (txt.includes("op ", "gamemode ", "kick ", "ban ") && !command.isOp) {
+			s(`say "${command.user}" attempted to use restricted command ${txt} using ${command.owner}/${command.name}`);
+			return this;
+		}
+		if (txt.includes("setblock ", "fill ", "summon ", "give ") && antigriefing && !command.isOp) {
+			s(`say "${command.user}" attempted to use restricted command ${txt} using ${command.owner}/${command.name}`)
+			return this;
 		}
 		s(`execute at @e[type=armor_stand,name=${this.Drone.name}] run ${txt}`);
 		return this;
