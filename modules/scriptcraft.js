@@ -136,7 +136,7 @@ process.on("message", (msg) => {
 				if (shadowbanned.length === 1) {
 					sendMessage(playerName, `${shadowbanned[0]} is shadowbanned.`, "blue");
 				} else {
-					sendMessage(playerName, `${shadowbanned.join(", ")} are shadowbanned.`, "blue");
+					sendMessage(playerName, `Shadowbanned: ${shadowbanned.join(", ")}.`, "blue");
 				}
 			}
 		}
