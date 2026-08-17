@@ -56,7 +56,7 @@ process.on("message", (msg) => {
 		}
 		
 	}
-	if (msg.endsWith("All dimensions are saved")) {
+	if (msg.includes("All dimensions are saved")) {
 		process.send("gamerule advance_time false");
 		process.send("gamerule advance_weather false");
 		process.send("time set 6000");
