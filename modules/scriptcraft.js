@@ -165,14 +165,16 @@ process.on("message", (msg) => {
 		return;
 	}
 
-	if (playerCommand === "list") {
-		//list all scripts in user folder (should work with the --in flag)
-		if (!fs.existsSync(path.join("./public/", folderName))) {
+	if (!fs.existsSync(path.join("./public/", folderName))) {
 			sendMessage(playerName, `Folder "${folderName}" does not exist!`, "red");
 			return;
-		}
+	}
 
-		const scripts = fs.readdirSync(path.join("./public/", folderName));
+	const scripts = fs.readdirSync(path.join("./public/", folderName)).filter((f) => !f.startsWith(".")); // exclude .DS_Store and other hidden files
+	const templates = fs.readdirSync(path.join("./templates/")).filter((f) => !f.startsWith(".")); // exclude .DS_Store and other hidden files
+
+	if (playerCommand === "list") {
+		//list all scripts in user folder (should work with the --in flag)
 		sendMessage(playerName, `Scripts in "${folderName}": ${scripts.join(", ")}`, "green");
 		return;
 	}
@@ -306,8 +308,6 @@ process.on("message", (msg) => {
 		return;
 	}
 
-	const scripts = fs.readdirSync(path.join("./public/", folderName));
-	const templates = fs.readdirSync(path.join("./templates/"));
 
 	if (playerCommand.startsWith("create ")) {
 		const createParts = playerCommand.split(" ");
@@ -322,6 +322,11 @@ process.on("message", (msg) => {
 
 		if (scripts.includes(createName)) {
 			sendMessage(playerName, `You already have a script named "${createName}"!`, "red");
+			return;
+		}
+
+		if (createName.startsWith(".")) {
+			sendMessage(playerName, `Script name cannot start with a "."!`, "red");
 			return;
 		}
 
