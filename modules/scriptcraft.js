@@ -9,6 +9,11 @@ import file from "./file.js";
 const prefix = "!sc ";
 const player = {};
 
+if (!fs.existsSync("./minecraft/antigrief.txt")) {
+	fs.writeFileSync("./minecraft/antigrief.txt", "true");
+}
+let antigrief = (fs.readFileSync("./minecraft/antigrief.txt") === 'true');
+
 if (!fs.existsSync("./minecraft/shadowbanned.json")) {
 	fs.writeFileSync("./minecraft/shadowbanned.json", "[]");
 }
@@ -45,7 +50,7 @@ process.on("message", (msg) => {
 		sendMessage(name, `Use '${prefix}create js COMMANDNAME' to create a new project.`, "green", `${prefix}create js COMMANDNAME`);
 		sendMessage(name, `Use '${prefix}help' to see all commands.`, "green", `${prefix}help`);
 		if (shadowbanned.includes(name)) {
-			process.send(`gamemode ${name} spectator`);
+			process.send(`gamemode spectator ${name}`);
 			sendMessage(name, "You are shadowbanned!", "red");
 			return;
 		}
@@ -73,6 +78,7 @@ process.on("message", (msg) => {
 	const playerMessage = msg.split(chatMessage[0])[1];
 
 	const isOp = ops.includes(playerName);
+	const isShadowbanned = shadowbanned.includes(playerName);
 
 	if (!playerMessage.startsWith(prefix)) {
 		return;
@@ -119,12 +125,14 @@ process.on("message", (msg) => {
 			sendMessage(playerName, `${prefix}list - List all your scripts`, "green", `${prefix}list`);
 		}
 		if (isOp) {
-			sendMessage(playerName, `${prefix}shadowban PLAYERNAME to shadowban a player.`, "blue", `${prefix}shadowban PLAYERNAME`);
-			sendMessage(playerName, `${prefix}unshadowban PLAYERNAME to unshadowban a player.`, "blue", `${prefix}unshadowban PLAYERNAME`);
-			sendMessage(playerName, `${prefix}kill all to kill all code instances.`, "blue", `${prefix}kill all`);
 			sendMessage(playerName, `${prefix}create TEMPLATE SCRIPTNAME --in FOLDERNAME - Create a new script based on a template`, "blue", `${prefix}create TEMPLATE SCRIPTNAME --in FOLDERNAME`);
 			sendMessage(playerName, `${prefix}COMMANDNAME(ARGUMENTS) --in FOLDERNAME - Run a script`, "blue", `${prefix}COMMANDNAME(ARGUMENTS) --in FOLDERNAME`);
 			sendMessage(playerName, `${prefix}list --in FOLDERNAME - List all scripts in a folder`, "blue", `${prefix}list --in FOLDERNAME`);
+			sendMessage(playerName, `${prefix}shadowban PLAYERNAME - shadowban a player.`, "blue", `${prefix}shadowban PLAYERNAME`);
+			sendMessage(playerName, `${prefix}unshadowban PLAYERNAME - unshadowban a player.`, "blue", `${prefix}unshadowban PLAYERNAME`);
+			sendMessage(playerName, `${prefix}kill all - kill all code instances.`, "blue", `${prefix}kill all`);
+			sendMessage(playerName, `${prefix}grief - Toggle antigrief, disabling dangerous blocks and commands for non-ops.`, "blue", `${prefix}grief`)
+			sendMessage(playerName, `Antigrief is currently set to ${antigrief}`, "blue")
 			if (ops.length > 0) {
 				if (ops.length === 1) {
 					sendMessage(playerName, `Only you, ${ops[0]}, are an operator.`, "blue");
@@ -164,6 +172,16 @@ process.on("message", (msg) => {
 		sendMessage(playerName, "Killed all code instances!", "green");
 		return;
 	}
+	if (playerCommand === "grief") {
+		if (!isOp) {
+			sendMessage(playerName, `You are not allowed to toggle antigrief!`, "red");
+			return;
+		}
+		antigrief = !antigrief;
+		fs.writeFileSync("./minecraft/antigrief.txt", JSON.stringify(antigrief));
+		sendMessage(playerName, `Toggled antigrief to ${antigrief}`, "blue");
+		return;
+	}
 
 	if (!fs.existsSync(path.join("./public/", folderName))) {
 			sendMessage(playerName, `Folder "${folderName}" does not exist!`, "red");
@@ -186,7 +204,7 @@ process.on("message", (msg) => {
 		}
 
 		const shadowbanPlayerSelector = playerCommand.split(" ")[1];
-		var shadowbanPlayer = shadowbanPlayerSelector;
+		let shadowbanPlayer = shadowbanPlayerSelector;
 
 		if (!shadowbanPlayerSelector) {
 			sendMessage(playerName, `Please specify a player to shadowban!`, "red");
@@ -253,7 +271,7 @@ process.on("message", (msg) => {
 
 	if (playerCommand.startsWith("unshadowban ")) {
 		const unshadowbanPlayerSelector = playerCommand.split(" ")[1];
-		var unshadowbanPlayer = unshadowbanPlayerSelector;
+		let unshadowbanPlayer = unshadowbanPlayerSelector;
 
 		if (!isOp) {
 			sendMessage(playerName, `You are not allowed to unshadowban players!`, "red");
@@ -353,6 +371,8 @@ process.on("message", (msg) => {
 			player: playerName,
 			args: playerArguments,
 			isOp: isOp,
+			isShadowbanned: isShadowbanned,
+			antigrief: antigrief,
 		};
 
 		fs.writeFileSync(path.join("./public/", folderName, playerFunction, ".command.json"), JSON.stringify(scriptcraftArguments));

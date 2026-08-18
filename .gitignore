@@ -124,6 +124,7 @@ public/*
 !public/examples
 .currentmc
 shadowbanned.json
+antigrief.txt
 
 # MacOS
 .DS_Store

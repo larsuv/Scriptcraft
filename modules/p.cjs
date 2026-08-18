@@ -1,5 +1,4 @@
 let hasInit = false;
-let antigriefing = false; // set this to true to enable antigriefing and restrict block and command usage
 
 const args = JSON.parse(process.argv[2]);
 
@@ -8,7 +7,11 @@ const command = {
 	user: args.player,
 	name: args.script,
 	isOp: args.isOp,
+	isShadowbanned: args.isShadowbanned,
+	antigriefing: args.antigriefing,
 };
+
+let antigriefing = command.antigriefing ? true : command.isShadowbanned ? true : false; // set this to true to enable antigriefing and restrict block and command usage for everyone
 
 const config = require(`../public/${command.owner}/${command.name}/config.json`);
 
@@ -27,12 +30,15 @@ let conditions = "";
 
 let checkblock = (block) => {
 	if (!command.isOp) {
-		const illegal = ["tnt", "lava", "water", "command_block", "repeating_command_block", "chain_command_block", "structure_block", "jigsaw", "spawner", "end_portal_frame", "end_gateway", "end_portal", "fire", "nether_portal"];
+		const illegal = ["tnt", "lava", "water", "command_block", "repeating_command_block", "chain_command_block", "structure_block", "jigsaw", "spawn", "end_portal_frame", "end_gateway", "end_portal", "fire", "nether_portal", "flint_and_steel", "bedrock", "debug_stick", "arrow", "experience_bottle", "egg", "snowball", "potion", "bucket", "minecart", "trident", "dragon_egg", "light", "barrier", "structure_void"];
 		for (const illi of illegal) {
 			if (block.includes(illi)) {
 				conditions = "";
-				s(`say "${command.user}" attempted to spawn "${illi}" using ${command.owner}/${command.name}`);
-				s(`shadowban ${command.user}`);
+				s(`say "${command.user}" attempted to spawn "${block}" using ${command.owner}/${command.name}`);
+				if (!command.isShadowbanned) {
+					s(`shadowban ${command.user}`);
+					command.isShadowbanned = true;
+				}
 				block = "air";
 			}
 		}
@@ -131,7 +137,7 @@ module.exports = {
 		}
 		return this;
 	},
-	box: function (block, rechts, boven, diepte) {
+	box: function (block, rechts = 1, boven = 1, diepte = 1) {
 		block = this.parseID(block);
 
 		rechts = Math.round(rechts);
