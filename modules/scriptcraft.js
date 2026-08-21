@@ -12,17 +12,17 @@ const player = {};
 if (!fs.existsSync("./minecraft/antigrief.txt")) {
 	fs.writeFileSync("./minecraft/antigrief.txt", "true");
 }
-let antigrief = (fs.readFileSync("./minecraft/antigrief.txt") === 'true');
+let antigrief = fs.readFileSync("./minecraft/antigrief.txt") === "true";
 
 if (!fs.existsSync("./minecraft/shadowbanned.json")) {
 	fs.writeFileSync("./minecraft/shadowbanned.json", "[]");
 }
 const shadowbanned = JSON.parse(fs.readFileSync("./minecraft/shadowbanned.json"));
 
-const sendMessage = (playerName = "@a", msg = '""', color = "white", toCopy = '') => {
+const sendMessage = (playerName = "@a", msg = '""', color = "white", toCopy = "") => {
 	msg = JSON.stringify(msg);
-	
-	if (toCopy === '') {
+
+	if (toCopy === "") {
 		process.send(`tellraw ${playerName} {"text":${msg},"color":"${color}"}`);
 		return;
 	}
@@ -59,7 +59,6 @@ process.on("message", (msg) => {
 			sendMessage(name, "As there were no previous operators, you are now an operator!", "dark_blue");
 			ops.push(name);
 		}
-		
 	}
 	if (msg.includes("All dimensions are saved")) {
 		process.send("gamerule advance_time false");
@@ -125,14 +124,19 @@ process.on("message", (msg) => {
 			sendMessage(playerName, `${prefix}list - List all your scripts`, "green", `${prefix}list`);
 		}
 		if (isOp) {
-			sendMessage(playerName, `${prefix}create TEMPLATE SCRIPTNAME --in FOLDERNAME - Create a new script based on a template`, "blue", `${prefix}create TEMPLATE SCRIPTNAME --in FOLDERNAME`);
+			sendMessage(
+				playerName,
+				`${prefix}create TEMPLATE SCRIPTNAME --in FOLDERNAME - Create a new script based on a template`,
+				"blue",
+				`${prefix}create TEMPLATE SCRIPTNAME --in FOLDERNAME`,
+			);
 			sendMessage(playerName, `${prefix}COMMANDNAME(ARGUMENTS) --in FOLDERNAME - Run a script`, "blue", `${prefix}COMMANDNAME(ARGUMENTS) --in FOLDERNAME`);
 			sendMessage(playerName, `${prefix}list --in FOLDERNAME - List all scripts in a folder`, "blue", `${prefix}list --in FOLDERNAME`);
 			sendMessage(playerName, `${prefix}shadowban PLAYERNAME - shadowban a player.`, "blue", `${prefix}shadowban PLAYERNAME`);
 			sendMessage(playerName, `${prefix}unshadowban PLAYERNAME - unshadowban a player.`, "blue", `${prefix}unshadowban PLAYERNAME`);
 			sendMessage(playerName, `${prefix}kill all - kill all code instances.`, "blue", `${prefix}kill all`);
-			sendMessage(playerName, `${prefix}grief - Toggle antigrief, disabling dangerous blocks and commands for non-ops.`, "blue", `${prefix}grief`)
-			sendMessage(playerName, `Antigrief is currently set to ${antigrief}`, "blue")
+			sendMessage(playerName, `${prefix}grief - Toggle antigrief, disabling dangerous blocks and commands for non-ops.`, "blue", `${prefix}grief`);
+			sendMessage(playerName, `Antigrief is currently set to ${antigrief}`, "blue");
 			if (ops.length > 0) {
 				if (ops.length === 1) {
 					sendMessage(playerName, `Only you, ${ops[0]}, are an operator.`, "blue");
@@ -184,8 +188,8 @@ process.on("message", (msg) => {
 	}
 
 	if (!fs.existsSync(path.join("./public/", folderName))) {
-			sendMessage(playerName, `Folder "${folderName}" does not exist!`, "red");
-			return;
+		sendMessage(playerName, `Folder "${folderName}" does not exist!`, "red");
+		return;
 	}
 
 	const scripts = fs.readdirSync(path.join("./public/", folderName)).filter((f) => !f.startsWith(".")); // exclude .DS_Store and other hidden files
@@ -196,7 +200,7 @@ process.on("message", (msg) => {
 		sendMessage(playerName, `Scripts in "${folderName}": ${scripts.join(", ")}`, "green");
 		return;
 	}
-	
+
 	const shadowban = function (playerName = "Server", playerCommand = "", isOp = false) {
 		if (!isOp) {
 			sendMessage(playerName, `You are not allowed to shadowban players!`, "red");
@@ -262,7 +266,7 @@ process.on("message", (msg) => {
 		shadowbanned.push(shadowbanPlayer);
 		fs.writeFileSync("./minecraft/shadowbanned.json", JSON.stringify(shadowbanned));
 		return;
-	}
+	};
 
 	if (playerCommand.startsWith("shadowban ")) {
 		shadowban(playerName, playerCommand, isOp);
@@ -302,7 +306,7 @@ process.on("message", (msg) => {
 				unshadowbanPlayer = Object.keys(player)[Math.floor(Math.random() * Object.keys(player).length)];
 			}
 		}
-		
+
 		if (!shadowbanned.includes(unshadowbanPlayer)) {
 			sendMessage(playerName, `Player "${unshadowbanPlayer}" is not shadowbanned!`, "red");
 			return;
@@ -325,7 +329,6 @@ process.on("message", (msg) => {
 		sendMessage(playerName, `Folder "${folderName}" does not exist!`, "red");
 		return;
 	}
-
 
 	if (playerCommand.startsWith("create ")) {
 		const createParts = playerCommand.split(" ");

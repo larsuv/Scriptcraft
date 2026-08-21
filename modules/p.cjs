@@ -30,7 +30,37 @@ let conditions = "";
 
 let checkblock = (block) => {
 	if (!command.isOp) {
-		const illegal = ["tnt", "lava", "water", "command_block", "repeating_command_block", "chain_command_block", "structure_block", "jigsaw", "spawn", "end_portal_frame", "end_gateway", "end_portal", "fire", "nether_portal", "flint_and_steel", "bedrock", "debug_stick", "arrow", "experience_bottle", "egg", "snowball", "potion", "bucket", "minecart", "trident", "dragon_egg", "light", "barrier", "structure_void"];
+		const illegal = [
+			"tnt",
+			"lava",
+			"water",
+			"command_block",
+			"repeating_command_block",
+			"chain_command_block",
+			"structure_block",
+			"jigsaw",
+			"spawn",
+			"end_portal_frame",
+			"end_gateway",
+			"end_portal",
+			"fire",
+			"nether_portal",
+			"flint_and_steel",
+			"bedrock",
+			"debug_stick",
+			"arrow",
+			"experience_bottle",
+			"egg",
+			"snowball",
+			"potion",
+			"bucket",
+			"minecart",
+			"trident",
+			"dragon_egg",
+			"light",
+			"barrier",
+			"structure_void",
+		];
 		for (const illi of illegal) {
 			if (block.includes(illi)) {
 				conditions = "";
@@ -65,7 +95,7 @@ module.exports = {
 		s(
 			`execute at @e[type=minecraft:painting,name=${this.Drone.owner}] run summon armor_stand ~ ~ ~0.5 {NoGravity:1b,Invulnerable:1b,Small:1b,Invisible:1b,NoBasePlate:1b,Rotation:[${
 				(this.Drone.rotation + 2) * 90
-			}F,0F],equipment:{${config.visualDrone ? 'head: {count: 1, id: "command_block"}' : ''}},CustomName:"${this.Drone.name}"}`,
+			}F,0F],equipment:{${config.visualDrone ? 'head: {count: 1, id: "command_block"}' : ""}},CustomName:"${this.Drone.name}"}`,
 		);
 
 		s(
@@ -111,29 +141,33 @@ module.exports = {
 		s(`data merge entity @e[type=armor_stand,name="${this.Drone.name}",sort=nearest,limit=1] {Rotation:[${((this.Drone.rotation + 2) % 4) * 90}F,0F]}`);
 		return this;
 	},
-	door: function (door_type, dir){
-		if (dir == null){
+	door: function (door_type, dir) {
+		if (dir == null) {
 			switch (this.Drone.rotation) {
-			case 0:
-				dir = "north"
-				break;
-			case 1:
-				dir = "east"
-				break;
-			case 2:
-				dir = "south"
-				break;
-			case 3:
-				dir = "west"
-				break;
-		}
+				case 0:
+					dir = "north";
+					break;
+				case 1:
+					dir = "east";
+					break;
+				case 2:
+					dir = "south";
+					break;
+				case 3:
+					dir = "west";
+					break;
+			}
 		}
 		const x = parseFloat(this.Drone.initLocation[0]) + parseFloat(this.Drone.location[0]);
 		const y = parseFloat(this.Drone.initLocation[1]) + parseFloat(this.Drone.location[1]);
 		const z = parseFloat(this.Drone.initLocation[2]) + parseFloat(this.Drone.location[2]);
-		if (door_type.includes("door")){
-			s(`fill ~${Math.trunc(x)} ~${Math.trunc(y)} ~${Math.trunc(z)} ~${Math.trunc(x)} ~${Math.trunc(y)} ~${Math.trunc(z)} ${door_type+`[half=lower, facing=${dir}]`}`);
-			s(`fill ~${Math.trunc(x)} ~${Math.trunc(y + 1)} ~${Math.trunc(z)} ~${Math.trunc(x)} ~${Math.trunc(y + 1)} ~${Math.trunc(z)} ${door_type+`[half=upper, facing=${dir}]`}`);
+		if (door_type.includes("door")) {
+			s(
+				`fill ~${Math.trunc(x)} ~${Math.trunc(y)} ~${Math.trunc(z)} ~${Math.trunc(x)} ~${Math.trunc(y)} ~${Math.trunc(z)} ${door_type + `[half=lower, facing=${dir}]`}`,
+			);
+			s(
+				`fill ~${Math.trunc(x)} ~${Math.trunc(y + 1)} ~${Math.trunc(z)} ~${Math.trunc(x)} ~${Math.trunc(y + 1)} ~${Math.trunc(z)} ${door_type + `[half=upper, facing=${dir}]`}`,
+			);
 		}
 		return this;
 	},
@@ -299,7 +333,7 @@ module.exports = {
 			return this;
 		}
 		if (txt.includes("setblock ", "fill ", "summon ", "give ") && antigriefing && !command.isOp) {
-			s(`say "${command.user}" attempted to use restricted command ${txt} using ${command.owner}/${command.name}`)
+			s(`say "${command.user}" attempted to use restricted command ${txt} using ${command.owner}/${command.name}`);
 			return this;
 		}
 		s(`execute at @e[type=armor_stand,name=${this.Drone.name}] run ${txt}`);
