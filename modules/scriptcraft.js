@@ -60,14 +60,6 @@ process.on("message", (msg) => {
 			ops.push(name);
 		}
 	}
-	if (msg.includes("All dimensions are saved")) {
-		process.send("gamerule advance_time false");
-		process.send("gamerule advance_weather false");
-		process.send("time set 6000");
-		process.send("gamerule keep_inventory true");
-		process.send("gamerule command_block_output false");
-		process.send("gamerule spawn_mobs false");
-	}
 	const chatMessage = msg.match(/: <.+?> /);
 	if (!chatMessage) {
 		return;

@@ -3,6 +3,8 @@
 # make a docker volume and bind it to the ./public folder on the host machine
 docker volume create --name public -d local -o o=bind -o type=none -o device=$(pwd)/public
 
+docker volume create --name custom-clean-world -d local -o o=bind -o type=none -o device=$(pwd)/custom-clean-world
+
 # remove old / unused containers
 docker rm -f $(docker ps -a -q -f name=scriptcraft)
 
