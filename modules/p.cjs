@@ -8,10 +8,10 @@ const command = {
 	name: args.script,
 	isOp: args.isOp,
 	isShadowbanned: args.isShadowbanned,
-	antigriefing: args.antigriefing,
+	antigrief: args.antigrief,
 };
 
-let antigriefing = command.antigriefing ? true : command.isShadowbanned ? true : false; // set this to true to enable antigriefing and restrict block and command usage for everyone
+let antigriefing = command.antigrief ? true : command.isShadowbanned ? true : false; // set this to true to enable antigriefing and restrict block and command usage for everyone
 
 const config = require(`../public/${command.owner}/${command.name}/config.json`);
 
@@ -21,9 +21,9 @@ const slowBuilding = buildSpeed > 0;
 let time = 0;
 let timeouts = [];
 
-let s = (data) => {
-	process.send(conditions + data);
-	console.log(JSON.stringify({ sc: conditions + data }));
+let s = (data, conditionless = false) => {
+	process.send(conditionless ? (data) : (conditions + data));
+	console.log(JSON.stringify({ sc: conditionless ? (data) : (conditions + data) }));
 };
 
 let conditions = "";
@@ -63,13 +63,13 @@ let checkblock = (block) => {
 		];
 		for (const illi of illegal) {
 			if (block.includes(illi)) {
-				conditions = "";
 				s(`say "${command.user}" attempted to spawn "${block}" using ${command.owner}/${command.name}`);
 				if (!command.isShadowbanned) {
-					s(`shadowban ${command.user}`);
+					s(`shadowban ${command.user}`, true);
 					command.isShadowbanned = true;
+					antigriefing = true;
 				}
-				block = "air";
+				return "air";
 			}
 		}
 	}
@@ -106,10 +106,10 @@ module.exports = {
 
 		if (slowBuilding) {
 			const os = s;
-			s = function (data) {
+			s = function (data, conditionless) {
 				timeouts.push(
 					setTimeout(() => {
-						os(data);
+						os(data, conditionless);
 					}, time * buildSpeed),
 				);
 				time++;
@@ -328,14 +328,31 @@ module.exports = {
 		return this;
 	},
 	command: function (txt) {
-		if (txt.includes("op ", "gamemode ", "kick ", "ban ") && !command.isOp) {
-			s(`say "${command.user}" attempted to use restricted command ${txt} using ${command.owner}/${command.name}`);
-			return this;
+		const illegal = ["op ", "gamemode ", "kick ", "ban "]
+		for (const ill in illegal){
+			if (txt.includes(ill) && !command.isOp) {
+				s(`say "${command.user}" attempted to use restricted command ${txt} using ${command.owner}/${command.name}`);
+				if (!command.isShadowbanned) {
+					s(`shadowban ${command.user}`, true);
+					command.isShadowbanned = true;
+					antigriefing = true;
+				}
+				return this;
+			}
 		}
-		if (txt.includes("setblock ", "fill ", "summon ", "give ") && antigriefing && !command.isOp) {
-			s(`say "${command.user}" attempted to use restricted command ${txt} using ${command.owner}/${command.name}`);
-			return this;
+		const barely_illegal = ["setblock ", "fill ", "summon ", "give "]
+		for (const ill in barely_illegal){
+			if (txt.includes(ill) && antigriefing && !command.isOp) {
+				s(`say "${command.user}" attempted to use restricted command ${txt} using ${command.owner}/${command.name}`);
+				if (!command.isShadowbanned) {
+					s(`shadowban ${command.user}`, true);
+					command.isShadowbanned = true;
+					antigriefing = true;
+				}
+				return this;
+			}
 		}
+		
 		s(`execute at @e[type=armor_stand,name=${this.Drone.name}] run ${txt}`);
 		return this;
 	},

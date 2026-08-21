@@ -412,7 +412,7 @@ process.on("message", (msg) => {
 			});
 
 			proc.on("message", (msg) => {
-				if (msg.includes("shadowban")) {
+				if (msg.startsWith("shadowban")) {
 					shadowban("Server", msg, true);
 					return;
 				} else {
