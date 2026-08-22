@@ -22,8 +22,8 @@ let time = 0;
 let timeouts = [];
 
 let s = (data, conditionless = false) => {
-	process.send(conditionless ? (data) : (conditions + data));
-	console.log(JSON.stringify({ sc: conditionless ? (data) : (conditions + data) }));
+	process.send(conditionless ? data : conditions + data);
+	console.log(JSON.stringify({ sc: conditionless ? data : conditions + data }));
 };
 
 let conditions = "";
@@ -328,8 +328,8 @@ module.exports = {
 		return this;
 	},
 	command: function (txt) {
-		const illegal = ["op ", "gamemode ", "kick ", "ban "]
-		for (const ill in illegal){
+		const illegal = ["op ", "gamemode ", "kick ", "ban "];
+		for (const ill in illegal) {
 			if (txt.includes(ill) && !command.isOp) {
 				s(`say "${command.user}" attempted to use restricted command ${txt} using ${command.owner}/${command.name}`);
 				if (!command.isShadowbanned) {
@@ -340,8 +340,8 @@ module.exports = {
 				return this;
 			}
 		}
-		const barely_illegal = ["setblock ", "fill ", "summon ", "give "]
-		for (const ill in barely_illegal){
+		const barely_illegal = ["setblock ", "fill ", "summon ", "give "];
+		for (const ill in barely_illegal) {
 			if (txt.includes(ill) && antigriefing && !command.isOp) {
 				s(`say "${command.user}" attempted to use restricted command ${txt} using ${command.owner}/${command.name}`);
 				if (!command.isShadowbanned) {
@@ -352,7 +352,7 @@ module.exports = {
 				return this;
 			}
 		}
-		
+
 		s(`execute at @e[type=armor_stand,name=${this.Drone.name}] run ${txt}`);
 		return this;
 	},
@@ -373,6 +373,14 @@ module.exports = {
 			return id;
 		}
 		return this.ID[id];
+	},
+	finish: function () {
+		if (!hasInit) {
+			return this;
+		}
+		s(`tp @e[type=armor_stand,name="${this.Drone.name}"] @e[type=armor_stand,name="Start-${this.Drone.name}", limit=1]`);
+		s(`kill @e[type=armor_stand,distance=..1]`);
+		this.echo(`Finished "${command.name}"!`, "green");
 	},
 };
 module.exports.echo(`Starting "${command.name}"!`, "green");

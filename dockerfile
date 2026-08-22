@@ -24,6 +24,9 @@ COPY . .
 # Public folder needs to be mounted as a docker volume
 VOLUME /root/scriptcraft/public
 
+# custom-clean-world folder needs to be mounted as a docker volume
+VOLUME /root/scriptcraft/custom-clean-world
+
 # Expose port 25565
 EXPOSE 25565
 

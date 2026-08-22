@@ -43,7 +43,9 @@ process.on("message", (msg) => {
 	}
 	const ops = JSON.parse(fs.readFileSync("./minecraft/ops.json")).map((op) => op.name);
 
-	if (msg.endsWith(" joined the game")) {
+	const chatMessage = msg.match(/(: <.+?> |: \*.+? |: \[.+?\])/);
+
+	if (msg.endsWith(" joined the game") && !chatMessage) {
 		const name = msg.split("]: ").pop().replace(" joined the game", "");
 		sendMessage(name, "Welcome in ScriptCraft!", "green");
 		sendMessage(name, `Use '${prefix}COMMANDNAME' to build.`, "green", `${prefix}COMMANDNAME`);
@@ -60,7 +62,6 @@ process.on("message", (msg) => {
 			ops.push(name);
 		}
 	}
-	const chatMessage = msg.match(/: <.+?> /);
 	if (!chatMessage) {
 		return;
 	}
@@ -230,7 +231,8 @@ process.on("message", (msg) => {
 				return;
 			}
 			if (shadowbanPlayerSelector === "@p") {
-				shadowbanPlayer = Object.keys(player)[0];
+				sendMessage(playerName, `@p is unsupported!`, "red");
+				return;
 			}
 			if (shadowbanPlayerSelector === "@r") {
 				shadowbanPlayer = Object.keys(player)[Math.floor(Math.random() * Object.keys(player).length)];
@@ -292,7 +294,8 @@ process.on("message", (msg) => {
 				return;
 			}
 			if (unshadowbanPlayerSelector === "@p") {
-				unshadowbanPlayer = Object.keys(player)[0];
+				sendMessage(playerName, `@p is unsupported!`, "red");
+				return;
 			}
 			if (unshadowbanPlayerSelector === "@r") {
 				unshadowbanPlayer = Object.keys(player)[Math.floor(Math.random() * Object.keys(player).length)];
