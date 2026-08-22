@@ -16,15 +16,33 @@ let antigriefing = command.antigrief ? true : command.isShadowbanned ? true : fa
 const config = require(`../public/${command.owner}/${command.name}/config.json`);
 
 const buildSpeed = config.buildDelay || 0;
-const slowBuilding = buildSpeed > 0;
 
 let time = 0;
-let timeouts = [];
+let pending = 0;
+let finished = false;
 
 let s = (data, conditionless = false) => {
-	process.send(conditionless ? data : conditions + data);
-	console.log(JSON.stringify({ sc: conditionless ? data : conditions + data }));
+	const payload = conditionless ? data : conditions + data;
+	process.send(payload);
+	console.log(JSON.stringify({ sc: payload }));
 };
+
+function finish() {
+	if (finished) {
+		if (process.connected) process.disconnect();
+		process.exit(0);
+		return;
+	}
+	finished = true;
+
+	// cleanup while IPC is still usable
+	process.send(`kill @e[type=armor_stand,name="${module.exports.Drone.name}"]`);
+	process.send(`kill @e[type=armor_stand,name="Start-${module.exports.Drone.name}"]`);
+	process.send(`tellraw ${command.user} {"text":"Exited \\"${command.name}\\"","color":"green"}`);
+
+	if (process.connected) process.disconnect();
+	process.exit(0);
+}
 
 let conditions = "";
 
@@ -104,17 +122,16 @@ module.exports = {
 			}F,0F],equipment:{},CustomName:"Start-${this.Drone.name}"}`,
 		);
 
-		if (slowBuilding) {
-			const os = s;
-			s = function (data, conditionless) {
-				timeouts.push(
-					setTimeout(() => {
-						os(data, conditionless);
-					}, time * buildSpeed),
-				);
-				time++;
-			};
-		}
+		const os = s;
+		s = function (data, conditionless) {
+			pending++;
+			setTimeout(() => {
+				os(data, conditionless);
+				pending--;
+				if (pending === 0) finish();
+			}, time * buildSpeed);
+			time++;
+		};
 
 		conditions = `execute at @e[type=armor_stand,name="Start-${this.Drone.name}"] run `;
 
@@ -374,42 +391,26 @@ module.exports = {
 		}
 		return this.ID[id];
 	},
-	finish: function () {
-		if (!hasInit) {
-			return this;
-		}
-		s(`tp @e[type=armor_stand,name="${this.Drone.name}"] @e[type=armor_stand,name="Start-${this.Drone.name}", limit=1]`);
-		s(`kill @e[type=armor_stand,distance=..1]`);
-		this.echo(`Finished "${command.name}"!`, "green");
-	},
 };
 module.exports.echo(`Starting "${command.name}"!`, "green");
 module.exports.echo(`Config = buildDelay : "${config.buildDelay}", visualDrone : "${config.visualDrone}"`, "green");
 
 module.exports.init();
 
-function exitHandler(options, exitCode) {
-	if (options.cleanup) {
-		process.send(`kill @e[type=armor_stand,name="${module.exports.Drone.name}"]`);
-		process.send(`kill @e[type=armor_stand,name="Start-${module.exports.Drone.name}"]`);
-		module.exports.echo(`Exited "${command.name}"!`, "green");
-	}
-	if (exitCode || exitCode === 0) console.log(exitCode);
-	if (options.exit) process.exit();
-}
-
 //do something when app is closing
-process.on("exit", exitHandler.bind(null, { cleanup: true }));
+process.on("beforeExit", () => {
+	if (pending === 0) finish();
+});
 
 //catches ctrl+c event
-process.on("SIGINT", exitHandler.bind(null, { exit: true }));
+process.on("SIGINT", () => finish());
 
-// catches "kill pid" (for example: nodemon restart)
-process.on("SIGUSR1", exitHandler.bind(null, { exit: true }));
-process.on("SIGUSR2", exitHandler.bind(null, { exit: true }));
+process.on("SIGTERM", () => finish());
+process.on("SIGUSR1", () => finish());
+process.on("SIGUSR2", () => finish());
 
 //catches uncaught exceptions
 process.on("uncaughtException", (err) => {
 	console.error(err);
-	exitHandler.bind(null, { exit: true });
+	finish();
 });

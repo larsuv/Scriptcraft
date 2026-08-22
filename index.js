@@ -11,8 +11,8 @@ import os from "os";
 const totalRam = os.totalmem();
 //use at most 80% of the ram
 const maxRam = Math.floor(totalRam * 0.8);
-const ramInGigabytes = Math.floor(maxRam / 1024 / 1024 / 1024);
-console.log(`Using ${ramInGigabytes}GB of RAM`);
+const ramInMegabytes = Math.floor(maxRam / 1024 / 1024);
+console.log(`Using ${ramInMegabytes}MB of RAM`);
 
 (async () => {
 	const init = (d = false) => {
@@ -34,7 +34,7 @@ console.log(`Using ${ramInGigabytes}GB of RAM`);
 		}
 		file.cp(path.join(`${clean_world}`), path.join("./minecraft/world"));
 
-		const server = spawn("java", ["-jar", `-Xms${ramInGigabytes}G`, `-Xmx${ramInGigabytes}G`, "server.jar"], { cwd: "./minecraft" });
+		const server = spawn("java", ["-jar", `-Xms${ramInMegabytes}M`, `-Xmx${ramInMegabytes}M`, "server.jar"], { cwd: "./minecraft" });
 
 		//hot reload
 		let scriptcraft;
@@ -60,9 +60,9 @@ console.log(`Using ${ramInGigabytes}GB of RAM`);
 		});
 
 		server.stdout.on("data", (buffer) => {
-			const msg = buffer.toString().replace("\n", "")
+			const msg = buffer.toString().replace("\n", "");
 			if (msg.endsWith("/INFO]: No existing world data, creating new world") && !msg.match(/(: <.+?> |: \*.+? |: \[.+?\])/)) {
-				console.log(buffer.toString().replace("\n", ""))
+				console.log(buffer.toString().replace("\n", ""));
 				scriptcraft.alive = false;
 				scriptcraft.kill();
 				server.kill();
