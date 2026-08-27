@@ -43,7 +43,7 @@ process.on("message", (msg) => {
 	}
 	const ops = JSON.parse(fs.readFileSync("./minecraft/ops.json")).map((op) => op.name);
 
-	const chatMessage = msg.match(/(: <.+?> |: \*.+? |: \[.+?\])/);
+	const chatMessage = msg.match(/: <.+?> |: \*.+? |: \[.+?\] /);
 
 	if (msg.endsWith(" joined the game") && !chatMessage) {
 		const name = msg.split("]: ").pop().replace(" joined the game", "");
@@ -65,8 +65,7 @@ process.on("message", (msg) => {
 	if (!chatMessage) {
 		return;
 	}
-
-	const playerName = chatMessage[0].replace(": <", "").replace("> ", "");
+	const playerName = chatMessage[0].replace(/[^a-zA-Z0-9\_]/g, "");
 	const playerMessage = msg.split(chatMessage[0])[1];
 
 	const isOp = ops.includes(playerName);
