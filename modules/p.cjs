@@ -326,7 +326,7 @@ module.exports = {
 		return this;
 	},
 	command: function (txt = "") {
-		const illegal = ["op ", "gamemode ", "kick ", "ban "];
+		const illegal = ["op ", "gamemode ", "kick ", "ban ", "ban-ip ", "defaultgamemode ", "dialog ", "difficulty ", "pardon ", "pardon-ip ", "reload ", "save-all ", "save-off ", "save-on ", "spreadplayers ", "stop ", "tick ", "transfer ", "worldborder ", "whitelist ", "waypoint "];
 		for (const ill in illegal) {
 			if (txt.includes(ill) && !command.isOp) {
 				s(`say "${command.user}" attempted to use restricted command ${txt} using ${command.owner}/${command.name}`);
@@ -338,7 +338,7 @@ module.exports = {
 				return this;
 			}
 		}
-		const barely_illegal = ["setblock ", "fill ", "summon ", "give "];
+		const barely_illegal = ["setblock ", "fill ", "summon ", "give ", "kill ", "damage ", "data ", "effect ", "gamerule ", "item ", "attribute ", "enchant ", "particle ", "place ", "playsound ", "recipe ", "advancement ", "ride ", "rotate ", "teleport ", "title ", "weather ", "time "];
 		for (const ill in barely_illegal) {
 			if (txt.includes(ill) && antigriefing && !command.isOp) {
 				s(`say "${command.user}" attempted to use restricted command ${txt} using ${command.owner}/${command.name}`);
