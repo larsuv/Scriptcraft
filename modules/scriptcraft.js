@@ -396,7 +396,7 @@ process.on("message", (msg) => {
 				break;
 			}
 		}
-
+		/*
 		console.log({
 			folderName,
 			playerFunction,
@@ -404,7 +404,7 @@ process.on("message", (msg) => {
 			scriptcraftArguments,
 			playerArguments,
 		});
-
+		*/
 		let proc;
 		if (type == "node") {
 			proc = fork(script, [JSON.stringify(scriptcraftArguments), ...playerArguments], {

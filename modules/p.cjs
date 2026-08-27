@@ -21,7 +21,7 @@ let time = 0;
 let pending = 0;
 let finished = false;
 
-let s = (data, conditionless = false) => {
+let s = (data = "", conditionless = false) => {
 	const payload = conditionless ? data : conditions + data;
 	process.send(payload);
 	console.log(JSON.stringify({ sc: payload }));
@@ -46,7 +46,7 @@ function finish() {
 
 let conditions = "";
 
-let checkblock = (block) => {
+let checkblock = (block = "air") => {
 	if (!command.isOp) {
 		const illegal = [
 			"tnt",
@@ -138,17 +138,17 @@ module.exports = {
 		s(`kill @e[type=painting,name=${this.Drone.owner}]`);
 		return this;
 	},
-	echo: function (msg, color = "white") {
+	echo: function (msg = "", color = "white") {
 		msg = JSON.stringify(msg);
 		s(`tellraw ${command.user} {"text":${msg},"color":"${color}","clickEvent":{"action":"copy_to_clipboard","value":${msg}}}`);
 		return this;
 	},
 	points: {},
-	chkpt: function (name) {
+	chkpt: function (name = "") {
 		this.points[name] = JSON.parse(JSON.stringify(this.Drone));
 		return this;
 	},
-	move: function (name) {
+	move: function (name = "") {
 		if (!this.points[name]) {
 			return this;
 		}
@@ -158,8 +158,8 @@ module.exports = {
 		s(`data merge entity @e[type=armor_stand,name="${this.Drone.name}",sort=nearest,limit=1] {Rotation:[${((this.Drone.rotation + 2) % 4) * 90}F,0F]}`);
 		return this;
 	},
-	door: function (door_type, dir) {
-		if (dir == null) {
+	door: function (door_type = "oak_door", dir = "") {
+		if (dir == "") {
 			switch (this.Drone.rotation) {
 				case 0:
 					dir = "north";
@@ -188,7 +188,7 @@ module.exports = {
 		}
 		return this;
 	},
-	box: function (block, rechts = 1, boven = 1, diepte = 1) {
+	box: function (block = "air", rechts = 1, boven = 1, diepte = 1) {
 		block = this.parseID(block);
 
 		rechts = Math.round(rechts);
@@ -234,17 +234,13 @@ module.exports = {
 		s(`fill ~${Math.trunc(x)} ~${Math.trunc(y)} ~${Math.trunc(z)} ~${Math.trunc(x + xs)} ~${Math.trunc(y + boven)} ~${Math.trunc(z + zs)} ${block}`);
 		return this;
 	},
-	turn: function (amt) {
-		if (amt == null) {
-			this.Drone.rotation = this.Drone.rotation + 1;
-		} else {
-			this.Drone.rotation = this.Drone.rotation + amt;
-		}
+	turn: function (amt = 1) {
+		this.Drone.rotation = this.Drone.rotation + amt;
 		this.Drone.rotation = this.Drone.rotation % 4;
 		s(`data merge entity @e[type=armor_stand,name="${this.Drone.name}",sort=nearest,limit=1] {Rotation:[${((this.Drone.rotation + 2) % 4) * 90}F,0F]}`);
 		return this;
 	},
-	fwd: function (amt) {
+	fwd: function (amt = 1) {
 		if (amt == null) {
 			amt = 1;
 		}
@@ -265,10 +261,7 @@ module.exports = {
 		s(`tp @e[type=armor_stand,name="${this.Drone.name}"] ~${this.Drone.location[0]} ~${this.Drone.location[1]} ~${this.Drone.location[2]}`);
 		return this;
 	},
-	back: function (amt) {
-		if (amt == null) {
-			amt = 1;
-		}
+	back: function (amt = 1) {
 		switch (this.Drone.rotation) {
 			case 0:
 				this.Drone.location[2] = parseFloat(this.Drone.location[2]) + amt;
@@ -286,10 +279,7 @@ module.exports = {
 		s(`tp @e[type=armor_stand,name="${this.Drone.name}"] ~${this.Drone.location[0]} ~${this.Drone.location[1]} ~${this.Drone.location[2]}`);
 		return this;
 	},
-	left: function (amt) {
-		if (amt == null) {
-			amt = 1;
-		}
+	left: function (amt = 1) {
 		switch (this.Drone.rotation) {
 			case 0:
 				this.Drone.location[0] = parseFloat(this.Drone.location[0]) - amt;
@@ -307,10 +297,7 @@ module.exports = {
 		s(`tp @e[type=armor_stand,name=${this.Drone.name}] ~${this.Drone.location[0]} ~${this.Drone.location[1]} ~${this.Drone.location[2]}`);
 		return this;
 	},
-	right: function (amt) {
-		if (amt == null) {
-			amt = 1;
-		}
+	right: function (amt = 1) {
 		switch (this.Drone.rotation) {
 			case 0:
 				this.Drone.location[0] = parseFloat(this.Drone.location[0]) + amt;
@@ -328,23 +315,17 @@ module.exports = {
 		s(`tp @e[type=armor_stand,name=${this.Drone.name}] ~${this.Drone.location[0]} ~${this.Drone.location[1]} ~${this.Drone.location[2]}`);
 		return this;
 	},
-	up: function (amt) {
-		if (amt == null) {
-			amt = 1;
-		}
+	up: function (amt = 1) {
 		this.Drone.location[1] = parseFloat(this.Drone.location[1]) + amt;
 		s(`tp @e[type=armor_stand,name=${this.Drone.name}] ~${this.Drone.location[0]} ~${this.Drone.location[1]} ~${this.Drone.location[2]}`);
 		return this;
 	},
-	down: function (amt) {
-		if (amt == null) {
-			amt = 1;
-		}
+	down: function (amt = 1) {
 		this.Drone.location[1] = parseFloat(this.Drone.location[1]) - amt;
 		s(`tp @e[type=armor_stand,name=${this.Drone.name}] ~${this.Drone.location[0]} ~${this.Drone.location[1]} ~${this.Drone.location[2]}`);
 		return this;
 	},
-	command: function (txt) {
+	command: function (txt = "") {
 		const illegal = ["op ", "gamemode ", "kick ", "ban "];
 		for (const ill in illegal) {
 			if (txt.includes(ill) && !command.isOp) {
