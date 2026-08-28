@@ -126,6 +126,7 @@ public/*
 shadowbanned.json
 antigrief.txt
 custom-clean-world/*
+settings.json
 
 # MacOS
 .DS_Store
