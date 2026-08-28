@@ -39,9 +39,8 @@ console.log(`Using ${ramInMegabytes}MB of RAM`);
 			}
 			file.cp(path.join(`${clean_world}`), path.join("./minecraft/world"));
 		}
-		
 
-		const server = spawn("java", ["-jar", `-Xms${ramInMegabytes}M`, `-Xmx${ramInMegabytes}M`, "server.jar"], { cwd: "./minecraft",});
+		const server = spawn("java", ["-jar", `-Xms${ramInMegabytes}M`, `-Xmx${ramInMegabytes}M`, "server.jar"], { cwd: "./minecraft" });
 
 		//hot reload
 		let scriptcraft;
@@ -68,7 +67,11 @@ console.log(`Using ${ramInMegabytes}MB of RAM`);
 
 		server.stdout.on("data", (buffer) => {
 			const msg = buffer.toString().replace("\n", "");
-			if (settings.replace_world && msg.endsWith("/INFO]: No existing world data, creating new world") && !msg.match(/: [<\[][a-zA-Z0-9\_]{3,16}[>\]] |: \* [a-zA-Z0-9\_]{3,16} /)) {
+			if (
+				settings.replace_world &&
+				msg.endsWith("/INFO]: No existing world data, creating new world") &&
+				!msg.match(/: [<\[][a-zA-Z0-9\_]{3,16}[>\]] |: \* [a-zA-Z0-9\_]{3,16} /)
+			) {
 				console.log(buffer.toString().replace("\n", ""));
 				scriptcraft.alive = false;
 				scriptcraft.kill();
@@ -85,8 +88,8 @@ console.log(`Using ${ramInMegabytes}MB of RAM`);
 			process.exit(code ?? 1);
 		});
 
-		process.on("SIGTERM", () => server.stdin.write("stop\n"))
-		process.on("SIGINT", () => server.stdin.write("stop\n"))
+		process.on("SIGTERM", () => server.stdin.write("stop\n"));
+		process.on("SIGINT", () => server.stdin.write("stop\n"));
 	};
 	init();
 })();

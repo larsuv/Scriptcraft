@@ -9,7 +9,7 @@ import file from "./file.js";
 const prefix = "!sc ";
 const player = {};
 
-let settings = JSON.parse(fs.readFileSync("./settings.json"))
+let settings = JSON.parse(fs.readFileSync("./settings.json"));
 
 if (!fs.existsSync("./minecraft/shadowbanned.json")) {
 	fs.writeFileSync("./minecraft/shadowbanned.json", "[]");
@@ -325,7 +325,6 @@ process.on("message", (msg) => {
 		fs.writeFileSync("./minecraft/shadowbanned.json", JSON.stringify(shadowbanned));
 		return;
 	}
-
 
 	if (!fs.existsSync(path.join("./public/", folderName))) {
 		sendMessage(playerName, `Folder "${folderName}" does not exist!`, "red");
