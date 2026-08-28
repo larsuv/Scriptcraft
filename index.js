@@ -1,4 +1,4 @@
-console.log("Starting Scriptcraft!");
+console.log("\nStarting Scriptcraft!");
 
 import path from "path";
 import fs from "fs";
@@ -84,7 +84,7 @@ console.log(`Using ${ramInMegabytes}MB of RAM`);
 		});
 
 		server.on("exit", (code, signal) => {
-			console.log(`minecraft exited code=${code} signal=${signal}\n`);
+			console.log(`minecraft exited code=${code} signal=${signal}`);
 			process.exit(code ?? 1);
 		});
 

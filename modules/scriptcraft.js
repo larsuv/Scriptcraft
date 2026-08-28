@@ -1,4 +1,4 @@
-console.log("Loaded");
+console.log("Loaded\n");
 
 import fs from "fs";
 import path from "path";
