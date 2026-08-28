@@ -11,8 +11,14 @@ import os from "os";
 const totalRam = os.totalmem();
 //use at most 80% of the ram
 const maxRam = Math.floor(totalRam * 0.8);
-const ramInMegabytes = Math.floor(maxRam / 1024 / 1024);
-console.log(`Using ${ramInMegabytes}MB of RAM`);
+//prefer 40% of the ram
+const midRam = Math.floor(totalRam * 0.4);
+//use more than 20% of the ram
+const minRam = Math.floor(totalRam * 0.2);
+const maxRamInMegabytes = Math.floor(maxRam / 1024 / 1024);
+const midRamInMegabytes = Math.floor(midRam / 1024 / 1024);
+const minRamInMegabytes = Math.floor(minRam / 1024 / 1024);
+console.log(`Using at most ${maxRamInMegabytes}MB of RAM`);
 
 (async () => {
 	const init = (d = false) => {
@@ -40,7 +46,7 @@ console.log(`Using ${ramInMegabytes}MB of RAM`);
 			file.cp(path.join(`${clean_world}`), path.join("./minecraft/world"));
 		}
 
-		const server = spawn("java", ["-jar", `-Xms${ramInMegabytes}M`, `-Xmx${ramInMegabytes}M`, "server.jar"], { cwd: "./minecraft" });
+		const server = spawn("java", ["-jar", `-Xms${minRamInMegabytes}M`, `-Xmx${maxRamInMegabytes}M`, `-XX:SoftMaxHeapSize=${midRamInMegabytes}M`, "server.jar"], { cwd: "./minecraft" });
 
 		//hot reload
 		let scriptcraft;

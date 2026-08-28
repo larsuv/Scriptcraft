@@ -33,12 +33,12 @@ function finish() {
 		process.exit(0);
 		return;
 	}
-	finished = true;
-
 	// cleanup while IPC is still usable
 	process.send(`kill @e[type=armor_stand,name="${module.exports.Drone.name}"]`);
 	process.send(`kill @e[type=armor_stand,name="Start-${module.exports.Drone.name}"]`);
 	process.send(`tellraw ${command.user} {"text":"Exited \\"${command.name}\\"","color":"green"}`);
+
+	finished = true;
 
 	if (process.connected) process.disconnect();
 	process.exit(0);
