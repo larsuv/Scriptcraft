@@ -87,6 +87,7 @@ process.on("message", (msg) => {
 	}
 
 	let folderName = playerName;
+	file.mkDirKeep(path.join("./public/", playerName));
 	if (playerArgument["in"]) {
 		if (!isOp) {
 			sendMessage(playerName, `You are not allowed to use the "--in" parameter!`, "red");
@@ -317,7 +318,6 @@ process.on("message", (msg) => {
 		return;
 	}
 
-	file.mkDirKeep(path.join("./public/", playerName));
 
 	if (!fs.existsSync(path.join("./public/", folderName))) {
 		sendMessage(playerName, `Folder "${folderName}" does not exist!`, "red");
