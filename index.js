@@ -65,6 +65,7 @@ console.log(`Using ${ramInMegabytes}MB of RAM`);
 		fs.watch("./modules", () => {
 			scriptcraft.kill();
 		});
+
 		server.stdout.on("data", (buffer) => {
 			const msg = buffer.toString().replace("\n", "");
 			if (settings.replace_world && msg.endsWith("/INFO]: No existing world data, creating new world") && !msg.match(/: [<\[][a-zA-Z0-9\_]{3,16}[>\]] |: \* [a-zA-Z0-9\_]{3,16} /)) {
@@ -78,13 +79,14 @@ console.log(`Using ${ramInMegabytes}MB of RAM`);
 				scriptcraft.send(msg);
 			}
 		});
+
 		server.on("exit", (code, signal) => {
 			console.log(`minecraft exited code=${code} signal=${signal}\n`);
 			process.exit(code ?? 1);
 		});
+
 		process.on("SIGTERM", () => server.stdin.write("stop\n"))
 		process.on("SIGINT", () => server.stdin.write("stop\n"))
 	};
 	init();
-	
 })();
