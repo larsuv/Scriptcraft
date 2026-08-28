@@ -127,6 +127,7 @@ process.on("message", (msg) => {
 			sendMessage(playerName, `${prefix}kill all - kill all code instances.`, "blue", `${prefix}kill all`);
 			sendMessage(playerName, `${prefix}grief - Toggle antigrief, disabling dangerous blocks and commands for non-ops.`, "blue", `${prefix}grief`);
 			sendMessage(playerName, `Antigrief is currently set to ${settings.antigrief}`, "blue");
+			sendMessage(playerName, `Replace_world is currently set to ${settings.replace_world}`, "blue");
 			if (ops.length > 0) {
 				if (ops.length === 1) {
 					sendMessage(playerName, `Only you, ${ops[0]}, are an operator.`, "blue");
