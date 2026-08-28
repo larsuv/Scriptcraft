@@ -16,25 +16,32 @@ console.log(`Using ${ramInMegabytes}MB of RAM`);
 
 (async () => {
 	const init = (d = false) => {
-		//remove old Minecraft world
-		fs.rmSync(path.join("./minecraft", "world"), { recursive: true, force: true });
-
-		//copies clean Minecraft world
-		let clean_world;
-		if (fs.existsSync("./custom-clean-world") && fs.readdirSync(path.join("./custom-clean-world")).filter((f) => !f.includes(".")).length > 0 && !d) {
-			clean_world = path.join("./custom-clean-world", fs.readdirSync(path.join("./custom-clean-world")).filter((f) => !f.includes("."))[0]);
-			console.log(`replacing world with ${clean_world}`);
-		} else {
-			clean_world = path.join("./minecraft/world_clean");
-			if (d) {
-				console.log(
-					`The first directory "${path.join("./custom-clean-world", fs.readdirSync(path.join("./custom-clean-world")).filter((f) => !f.includes("."))[0])}" was not a minecraft world`,
-				);
-			}
+		if (!fs.existsSync("./settings.json")) {
+			fs.writeFileSync("./settings.json", '{ "replace_world":true, "antigrief":true }');
 		}
-		file.cp(path.join(`${clean_world}`), path.join("./minecraft/world"));
+		let settings = JSON.parse(fs.readFileSync("./settings.json"));
+		if (settings.replace_world) {
+			//remove old Minecraft world
+			fs.rmSync(path.join("./minecraft", "world"), { recursive: true, force: true });
 
-		const server = spawn("java", ["-jar", `-Xms${ramInMegabytes}M`, `-Xmx${ramInMegabytes}M`, "server.jar"], { cwd: "./minecraft" });
+			//copies clean Minecraft world
+			let clean_world;
+			if (fs.existsSync("./custom-clean-world") && fs.readdirSync(path.join("./custom-clean-world")).filter((f) => !f.includes(".")).length > 0 && !d) {
+				clean_world = path.join("./custom-clean-world", fs.readdirSync(path.join("./custom-clean-world")).filter((f) => !f.includes("."))[0]);
+				console.log(`replacing world with ${clean_world}`);
+			} else {
+				clean_world = path.join("./minecraft/world_clean");
+				if (d) {
+					console.log(
+						`The first directory "${path.join("./custom-clean-world", fs.readdirSync(path.join("./custom-clean-world")).filter((f) => !f.includes("."))[0])}" was not a minecraft world`,
+					);
+				}
+			}
+			file.cp(path.join(`${clean_world}`), path.join("./minecraft/world"));
+		}
+		
+
+		const server = spawn("java", ["-jar", `-Xms${ramInMegabytes}M`, `-Xmx${ramInMegabytes}M`, "server.jar"], { cwd: "./minecraft",});
 
 		//hot reload
 		let scriptcraft;
@@ -58,10 +65,9 @@ console.log(`Using ${ramInMegabytes}MB of RAM`);
 		fs.watch("./modules", () => {
 			scriptcraft.kill();
 		});
-
 		server.stdout.on("data", (buffer) => {
 			const msg = buffer.toString().replace("\n", "");
-			if (msg.endsWith("/INFO]: No existing world data, creating new world") && !msg.match(/(: <.+?> |: \*.+? |: \[.+?\])/)) {
+			if (settings.replace_world && msg.endsWith("/INFO]: No existing world data, creating new world") && !msg.match(/: [<\[][a-zA-Z0-9\_]{3,16}[>\]] |: \* [a-zA-Z0-9\_]{3,16} /)) {
 				console.log(buffer.toString().replace("\n", ""));
 				scriptcraft.alive = false;
 				scriptcraft.kill();
@@ -72,6 +78,13 @@ console.log(`Using ${ramInMegabytes}MB of RAM`);
 				scriptcraft.send(msg);
 			}
 		});
+		server.on("exit", (code, signal) => {
+			console.log(`minecraft exited code=${code} signal=${signal}\n`);
+			process.exit(code ?? 1);
+		});
+		process.on("SIGTERM", () => server.stdin.write("stop\n"))
+		process.on("SIGINT", () => server.stdin.write("stop\n"))
 	};
 	init();
+	
 })();

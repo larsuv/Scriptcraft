@@ -9,10 +9,7 @@ import file from "./file.js";
 const prefix = "!sc ";
 const player = {};
 
-if (!fs.existsSync("./minecraft/antigrief.txt")) {
-	fs.writeFileSync("./minecraft/antigrief.txt", "true");
-}
-let antigrief = fs.readFileSync("./minecraft/antigrief.txt") === "true";
+let settings = JSON.parse(fs.readFileSync("./settings.json"))
 
 if (!fs.existsSync("./minecraft/shadowbanned.json")) {
 	fs.writeFileSync("./minecraft/shadowbanned.json", "[]");
@@ -129,7 +126,7 @@ process.on("message", (msg) => {
 			sendMessage(playerName, `${prefix}unshadowban PLAYERNAME - unshadowban a player.`, "blue", `${prefix}unshadowban PLAYERNAME`);
 			sendMessage(playerName, `${prefix}kill all - kill all code instances.`, "blue", `${prefix}kill all`);
 			sendMessage(playerName, `${prefix}grief - Toggle antigrief, disabling dangerous blocks and commands for non-ops.`, "blue", `${prefix}grief`);
-			sendMessage(playerName, `Antigrief is currently set to ${antigrief}`, "blue");
+			sendMessage(playerName, `Antigrief is currently set to ${settings.antigrief}`, "blue");
 			if (ops.length > 0) {
 				if (ops.length === 1) {
 					sendMessage(playerName, `Only you, ${ops[0]}, are an operator.`, "blue");
@@ -174,9 +171,20 @@ process.on("message", (msg) => {
 			sendMessage(playerName, `You are not allowed to toggle antigrief!`, "red");
 			return;
 		}
-		antigrief = !antigrief;
-		fs.writeFileSync("./minecraft/antigrief.txt", JSON.stringify(antigrief));
-		sendMessage(playerName, `Toggled antigrief to ${antigrief}`, "blue");
+		settings.antigrief = !settings.antigrief;
+		fs.writeFileSync("./settings.json", JSON.stringify(settings));
+		sendMessage(playerName, `Toggled antigrief to ${settings.antigrief}`, "blue");
+		return;
+	}
+
+	if (playerCommand === "replace_world") {
+		if (!isOp) {
+			sendMessage(playerName, `You are not allowed to toggle replace_world!`, "red");
+			return;
+		}
+		settings.replace_world = !settings.replace_world;
+		fs.writeFileSync("./settings.json", JSON.stringify(settings));
+		sendMessage(playerName, `Toggled replace_world to ${settings.replace_world}`, "blue");
 		return;
 	}
 
@@ -369,7 +377,7 @@ process.on("message", (msg) => {
 			args: playerArguments,
 			isOp: isOp,
 			isShadowbanned: isShadowbanned,
-			antigrief: antigrief,
+			antigrief: settings.antigrief,
 		};
 
 		fs.writeFileSync(path.join("./public/", folderName, playerFunction, ".command.json"), JSON.stringify(scriptcraftArguments));
