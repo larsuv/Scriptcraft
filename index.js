@@ -1,3 +1,4 @@
+console.clear();
 console.log("\nStarting Scriptcraft!");
 
 import path from "path";
@@ -38,6 +39,7 @@ console.log(`Using at most ${maxRamInMegabytes}MB of RAM`);
 			} else {
 				clean_world = path.join("./minecraft/world_clean");
 				if (d) {
+					console.clear();
 					console.log(
 						`The first directory "${path.join("./custom-clean-world", fs.readdirSync(path.join("./custom-clean-world")).filter((f) => !f.includes("."))[0])}" was not a minecraft world`,
 					);
