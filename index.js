@@ -76,7 +76,7 @@ console.log(`Using at most ${maxRamInMegabytes}MB of RAM`);
 			if (
 				settings.replace_world &&
 				msg.endsWith("/INFO]: No existing world data, creating new world") &&
-				!msg.match(/: [<\[][a-zA-Z0-9\_]{3,16}[>\]] |: \* [a-zA-Z0-9\_]{3,16} /)
+				!/: [<\[][a-zA-Z0-9\_]{3,16}[>\]] |: \* [a-zA-Z0-9\_]{3,16} /.test(msg)
 			) {
 				console.log(buffer.toString().replace("\n", ""));
 				scriptcraft.alive = false;
