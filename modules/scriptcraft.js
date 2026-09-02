@@ -75,7 +75,6 @@ process.on("message", (msg) => {
 	const playerFullCommand = playerMessage.replace(prefix, "");
 
 	const playerCommand = playerFullCommand.split(" --")[0];
-	const playerCommandLower = playerCommand.toLowerCase();
 	const playerArgs = playerFullCommand.split(" --").slice(1);
 
 	const playerArgument = {};
@@ -105,7 +104,7 @@ process.on("message", (msg) => {
 		};
 	}
 
-	if (playerCommandLower === "help") {
+	if (/^help$/i.test(playerCommand)) {
 		sendMessage(playerName, `Available commands:`, "green");
 		sendMessage(playerName, `${prefix}help - Show this message`, "green", `${prefix}help`);
 		sendMessage(playerName, `${prefix}kill - Kill all code instances for yourself`, "green", `${prefix}kill`);
@@ -147,7 +146,7 @@ process.on("message", (msg) => {
 		return;
 	}
 
-	if (playerCommandLower === "kill") {
+	if (/^kill$/i.test(playerCommand)) {
 		for (let i in player[playerName].processes) {
 			player[playerName].processes[i].kill("SIGINT");
 		}
@@ -155,7 +154,7 @@ process.on("message", (msg) => {
 		return;
 	}
 
-	if (playerCommandLower === "kill all" || playerCommandLower === "killall" || playerCommandLower === "kill-all" || playerCommandLower === "kill_all") {
+	if (/^kill all$|^killall$|^kill-all$|^kill_all$/i.test(playerCommand)) {
 		if (!isOp) {
 			sendMessage(playerName, `You are not allowed to kill all code instances!`, "red");
 			return;
@@ -168,7 +167,7 @@ process.on("message", (msg) => {
 		sendMessage(playerName, "Killed all code instances!", "green");
 		return;
 	}
-	if (playerCommandLower === "grief") {
+	if (/^grief$/i.test(playerCommand)) {
 		if (!isOp) {
 			sendMessage(playerName, `You are not allowed to toggle antigrief!`, "red");
 			return;
@@ -179,7 +178,7 @@ process.on("message", (msg) => {
 		return;
 	}
 
-	if (playerCommandLower === "replace_world" || playerCommandLower === "replaceworld" || playerCommandLower === "replace-world" || playerCommandLower === "replace world") {
+	if (/^replace_world$|^replaceworld$|^replace-world$|^replace world$/i.test(playerCommand)) {
 		if (!isOp) {
 			sendMessage(playerName, `You are not allowed to toggle replace_world!`, "red");
 			return;
@@ -198,7 +197,7 @@ process.on("message", (msg) => {
 	const scripts = fs.readdirSync(path.join("./public/", folderName)).filter((f) => !f.startsWith(".")); // exclude .DS_Store and other hidden files
 	const templates = fs.readdirSync(path.join("./templates/")).filter((f) => !f.startsWith(".")); // exclude .DS_Store and other hidden files
 
-	if (playerCommandLower === "list") {
+	if (/^list$/i.test(playerCommand)) {
 		//list all scripts in user folder (should work with the --in flag)
 		sendMessage(playerName, `Scripts in "${folderName}": ${scripts.join(", ")}`, "green");
 		return;
@@ -272,12 +271,12 @@ process.on("message", (msg) => {
 		return;
 	};
 
-	if (playerCommandLower.startsWith("shadowban ")) {
-		shadowban(playerName, playerCommandLower, isOp);
+	if (/^shadowban /i.test(playerCommand)) {
+		shadowban(playerName, playerCommand, isOp);
 		return;
 	}
 
-	if (playerCommandLower.startsWith("unshadowban ")) {
+	if (/^unshadowban /i.test(playerCommand)) {
 		const unshadowbanPlayerSelector = playerCommand.split(" ")[1];
 		let unshadowbanPlayer = unshadowbanPlayerSelector;
 
@@ -333,7 +332,7 @@ process.on("message", (msg) => {
 		return;
 	}
 
-	if (playerCommandLower.startsWith("create ")) {
+	if (/^create /i.test(playerCommand)) {
 		const createParts = playerCommand.split(" ");
 
 		if (createParts.length !== 3) {
@@ -423,7 +422,7 @@ process.on("message", (msg) => {
 			});
 
 			proc.on("message", (msg) => {
-				if (msg.startsWith("shadowban")) {
+				if (/^shadowban /.test(msg)) {
 					shadowban("Server", msg, true);
 					return;
 				} else {
