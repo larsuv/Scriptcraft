@@ -43,7 +43,7 @@ process.on("message", (msg) => {
 	const chatMessage = msg.match(/: [<\[][a-zA-Z0-9\_]{3,16}[>\]] |: \* [a-zA-Z0-9\_]{3,16} /);
 
 	if (msg.endsWith(" joined the game") && !chatMessage) {
-		const name = msg.split("]: ").pop().replace(" joined the game", "");
+		const name = msg.split("]: System chat: ").pop().replace(" joined the game", "");
 		sendMessage(name, "Welcome in ScriptCraft!", "green");
 		sendMessage(name, `Use '${prefix}COMMANDNAME' to build.`, "green", `${prefix}COMMANDNAME`);
 		sendMessage(name, `Use '${prefix}create js COMMANDNAME' to create a new project.`, "green", `${prefix}create js COMMANDNAME`);

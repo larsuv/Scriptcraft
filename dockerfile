@@ -9,8 +9,8 @@ RUN apk add --no-cache openjdk25
 # Make minecraft folder
 RUN mkdir minecraft
 
-# Download latest minecraft server jar to ./minecraft/server.jar ( 26.2 )
-RUN wget -O minecraft/server.jar https://piston-data.mojang.com/v1/objects/823e2250d24b3ddac457a60c92a6a941943fcd6a/server.jar
+# Download latest minecraft server jar to ./minecraft/server.jar ( 26.3 )
+RUN wget -O minecraft/server.jar https://piston-data.mojang.com/v1/objects/33680f5f2ac32864d6d7cf5e56a705fdb3e05f4c/server.jar
 
 # Install app dependencies
 COPY package*.json ./
