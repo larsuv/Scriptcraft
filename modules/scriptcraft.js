@@ -132,24 +132,22 @@ process.on("message", (msg) => {
 		sendMessage(playerName, `Available commands:`, "green");
 		sendMessage(playerName, `${prefix}help - Show this message`, "green", `${prefix}help`);
 		sendMessage(playerName, `${prefix}kill - Kill all code instances for yourself`, "green", `${prefix}kill`);
-		if (!isOp) {
-			sendMessage(playerName, `${prefix}create TEMPLATE SCRIPTNAME - Create a new script based on a template`, "green", `${prefix}create js SCRIPTNAME`); //as there is only one template, this is the only valid command for now
-			sendMessage(playerName, `${prefix}COMMANDNAME(ARGUMENTS) - Run a script`, "green", `${prefix}COMMANDNAME(ARGUMENTS)`);
-			sendMessage(playerName, `${prefix}list - List all your scripts`, "green", `${prefix}list`);
-		}
+		sendMessage(playerName, `${prefix}create TEMPLATE SCRIPTNAME - Create a new script based on a template`, "green", `${prefix}create js SCRIPTNAME`); //as there is only one template, this is the only valid command for now
+		sendMessage(playerName, `${prefix}COMMANDNAME(ARGUMENTS) - Run a script`, "green", `${prefix}COMMANDNAME(ARGUMENTS)`);
+		sendMessage(playerName, `${prefix}list - List all your scripts`, "green", `${prefix}list`);
+		sendMessage(playerName, `\nArguments:`, "green");
+		sendMessage(playerName, `--help or --? - Show help for a command.`, "green", `${prefix}help --help`);
 		if (isOp) {
-			sendMessage(
-				playerName,
-				`${prefix}create TEMPLATE SCRIPTNAME --in FOLDERNAME --force - Create a new script based on a template in a specified folder, creating the folder if it does not exist using the --force flag`,
-				"blue",
-				`${prefix}create TEMPLATE SCRIPTNAME --in FOLDERNAME --force`,
-			);
-			sendMessage(playerName, `${prefix}COMMANDNAME(ARGUMENTS) --in FOLDERNAME - Run a script in a folder`, "blue", `${prefix}COMMANDNAME(ARGUMENTS) --in FOLDERNAME`);
-			sendMessage(playerName, `${prefix}list --in FOLDERNAME - List all scripts in a folder`, "blue", `${prefix}list --in FOLDERNAME`);
+			sendMessage(playerName, `\nAvailable operator commands:`, "blue");
 			sendMessage(playerName, `${prefix}shadowban PLAYERNAME - shadowban a player.`, "blue", `${prefix}shadowban PLAYERNAME`);
 			sendMessage(playerName, `${prefix}unshadowban PLAYERNAME - unshadowban a player.`, "blue", `${prefix}unshadowban PLAYERNAME`);
 			sendMessage(playerName, `${prefix}kill all - kill all code instances.`, "blue", `${prefix}kill all`);
 			sendMessage(playerName, `${prefix}grief - Toggle antigrief, disabling dangerous blocks and commands for non-ops.`, "blue", `${prefix}grief`);
+			sendMessage(playerName, `${prefix}replace_world - Toggle replace_world, determining whether to replace the world when the server restarts.`, "blue", `${prefix}replace_world`);
+			sendMessage(playerName, `\nOperator arguments:`, "blue");
+			sendMessage(playerName, `--in FOLDERNAME - Run commands in a specified folder.`, "blue", `${prefix}help --in`);
+			sendMessage(playerName, `--force - Create a folder if it does not exist.`, "blue", `${prefix}help --force`);
+			sendMessage(playerName, `\nStatus:`, "blue");
 			sendMessage(playerName, `Antigrief is currently set to ${settings.antigrief}`, "blue");
 			sendMessage(playerName, `Replace_world is currently set to ${settings.replace_world}`, "blue");
 			if (ops.length > 0) {
