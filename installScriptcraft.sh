@@ -1,4 +1,7 @@
 #!/bin/bash
+SCRIPT_DIR="$( cd -- "$( dirname -- "${BASH_SOURCE[0]:-$0}"; )" &> /dev/null && pwd 2> /dev/null; )";
+
+cd $SCRIPT_DIR
 
 # make a docker volume and bind it to the ./public folder on the host machine
 docker volume create --name public -d local -o o=bind -o type=none -o device=$(pwd)/public

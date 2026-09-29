@@ -108,16 +108,16 @@ module.exports = {
 		}
 
 		hasInit = true;
-		s(`execute at @e[name=${this.Drone.owner}] run summon shulker ~ ~ ~ {CustomName:"${this.Drone.owner}",NoAI:1b,Silent:1b,Invulnerable:1b,active_effects:[{id:"minecraft:invisibility",duration:2147483647,show_particles:0b}],DeathLootTable:"minecraft:empty"}`);
+		s(`execute at @e[name=${this.Drone.owner}] run summon painting ~ ~ ~ {CustomName:"${this.Drone.owner}",Motive:"minecraft:plant"}`);
 
 		s(
-			`execute at @e[type=minecraft:shulker,name=${this.Drone.owner}] run summon armor_stand ~ ~ ~ {NoGravity:1b,Invulnerable:1b,Small:1b,Invisible:1b,NoBasePlate:1b,Rotation:[${
+			`execute at @e[type=minecraft:painting,name=${this.Drone.owner}] run summon armor_stand ~ ~ ~0.46875 {NoGravity:1b,Invulnerable:1b,Small:1b,Invisible:1b,NoBasePlate:1b,Rotation:[${
 				(this.Drone.rotation + 2) * 90
 			}F,0F],equipment:{${config.visualDrone ? 'head: {count: 1, id: "command_block"}' : ""}},CustomName:"${this.Drone.name}"}`,
 		);
 
 		s(
-			`execute at @e[type=minecraft:shulker,name=${this.Drone.owner}] run summon armor_stand ~ ~ ~ {NoGravity:1b,Invulnerable:1b,Marker:1b,Invisible:1b,NoBasePlate:1b,Rotation:[${
+			`execute at @e[type=minecraft:painting,name=${this.Drone.owner}] run summon armor_stand ~ ~ ~0.46875 {NoGravity:1b,Invulnerable:1b,Marker:1b,Invisible:1b,NoBasePlate:1b,Rotation:[${
 				(this.Drone.rotation + 2) * 90
 			}F,0F],equipment:{},CustomName:"Start-${this.Drone.name}"}`,
 		);
@@ -135,8 +135,7 @@ module.exports = {
 
 		conditions = `execute at @e[type=armor_stand,name="Start-${this.Drone.name}"] run `;
 
-		s(`execute at @e[type=minecraft:shulker,name=${this.Drone.owner}] run tp @s ~ -128 ~`);
-		s(`kill @e[type=shulker,name=${this.Drone.owner}]`);
+		s(`kill @e[type=painting,name=${this.Drone.owner}]`);
 		return this;
 	},
 	echo: function (msg = "", color = "white") {
