@@ -522,14 +522,8 @@ process.on("message", (msg) => {
 		});
 		player[playerName].processes.push(proc);
 	} else {
-		if (playerArgument["help"] || playerArgument["?"]) {
-			sendMessage(playerName, `Miscellaneous commands get executed directly.`, "green");
-			return;
-		}
-		try {
-			sendMessage(playerName, JSON.stringify(eval(playerCommand)), "green");
-		} catch (err) {
-			sendMessage(playerName, err.message, "red");
-		}
+		sendMessage(playerName, `Script "${playerFunction}" does not exist in "./public/${folderName}"!`, "red");
+		sendMessage(playerName, `Use '${prefix}create ${templates[0]} ${playerFunction}' to create a new script based on the "${templates[0]}" template.`, "green", `${prefix}create ${templates[0]} ${playerFunction}`);
+		return;
 	}
 });
