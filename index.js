@@ -48,7 +48,11 @@ console.log(`Using at most ${maxRamInMegabytes}MB of RAM`);
 			file.cp(path.join(`${clean_world}`), path.join("./minecraft/world"));
 		}
 
-		const server = spawn("java", ["-jar", `-Xms${minRamInMegabytes}M`, `-Xmx${maxRamInMegabytes}M`, `-XX:SoftMaxHeapSize=${midRamInMegabytes}M`, "server.jar"], { cwd: "./minecraft" });
+		const server = spawn(
+			"java",
+			["-jar", `-Xms${minRamInMegabytes}M`, `-Xmx${maxRamInMegabytes}M`, `-XX:SoftMaxHeapSize=${midRamInMegabytes}M`, "server.jar"],
+			{ cwd: "./minecraft" },
+		);
 
 		//hot reload
 		let scriptcraft;

@@ -77,7 +77,6 @@ process.on("message", (msg) => {
 	const playerCommand = playerFullCommand.split(/ --| -/g)[0];
 	const playerArgs = playerFullCommand.split(/ --| -/g).slice(1);
 
-
 	const playerArgument = {};
 	for (const arg of playerArgs) {
 		if (!arg.includes(" ")) {
@@ -92,10 +91,10 @@ process.on("message", (msg) => {
 	file.mkDirKeep(path.join("./public/", playerName));
 	if (playerArgument["in"]) {
 		if (!isOp) {
-				sendMessage(playerName, `You are not allowed to use the "--in" parameter!`, "red");
-				return;
-		} else if (playerArgument["help"]||playerArgument["?"]) {
-				sendMessage(playerName, `The --in parameter runs commands in a specified folder.`, "blue");
+			sendMessage(playerName, `You are not allowed to use the "--in" parameter!`, "red");
+			return;
+		} else if (playerArgument["help"] || playerArgument["?"]) {
+			sendMessage(playerName, `The --in parameter runs commands in a specified folder.`, "blue");
 		} else if (typeof playerArgument["in"] === "string") {
 			const folder = playerArgument["in"].match(/([a-zA-Z_\-0-9])\w+/);
 			if (!folder) {
@@ -107,13 +106,12 @@ process.on("message", (msg) => {
 			sendMessage(playerName, `Specify a folder for the "--in" parameter!`, "red");
 			return;
 		}
-		
 	}
 	if (playerArgument["force"]) {
 		if (!isOp) {
 			sendMessage(playerName, `You are not allowed to use the "--force" parameter!`, "red");
 			return;
-		} else if (playerArgument["help"]||playerArgument["?"]) {
+		} else if (playerArgument["help"] || playerArgument["?"]) {
 			sendMessage(playerName, `The --force parameter creates a folder if it does not exist.`, "blue");
 		}
 	}
@@ -125,7 +123,7 @@ process.on("message", (msg) => {
 	}
 
 	if (/^help$|^\?$/i.test(playerCommand)) {
-		if (playerArgument["help"]||playerArgument["?"]) {
+		if (playerArgument["help"] || playerArgument["?"]) {
 			sendMessage(playerName, `The help command shows available commands and their usage.`, "green");
 			return;
 		}
@@ -143,7 +141,12 @@ process.on("message", (msg) => {
 			sendMessage(playerName, `${prefix}unshadowban PLAYERNAME - unshadowban a player.`, "blue", `${prefix}unshadowban PLAYERNAME`);
 			sendMessage(playerName, `${prefix}kill all - kill all code instances.`, "blue", `${prefix}kill all`);
 			sendMessage(playerName, `${prefix}grief - Toggle antigrief, disabling dangerous blocks and commands for non-ops.`, "blue", `${prefix}grief`);
-			sendMessage(playerName, `${prefix}replace_world - Toggle replace_world, determining whether to replace the world when the server restarts.`, "blue", `${prefix}replace_world`);
+			sendMessage(
+				playerName,
+				`${prefix}replace_world - Toggle replace_world, determining whether to replace the world when the server restarts.`,
+				"blue",
+				`${prefix}replace_world`,
+			);
 			sendMessage(playerName, `\nOperator arguments:`, "blue");
 			sendMessage(playerName, `--in FOLDERNAME - Run commands in a specified folder.`, "blue", `${prefix}help --in`);
 			sendMessage(playerName, `--force - Create a folder if it does not exist.`, "blue", `${prefix}help --force`);
@@ -169,7 +172,7 @@ process.on("message", (msg) => {
 	}
 
 	if (/^kill$/i.test(playerCommand)) {
-		if (playerArgument["help"]||playerArgument["?"]) {
+		if (playerArgument["help"] || playerArgument["?"]) {
 			sendMessage(playerName, `The kill command kills all code instances for yourself.`, "green");
 		}
 		for (let i in player[playerName].processes) {
@@ -184,7 +187,7 @@ process.on("message", (msg) => {
 			sendMessage(playerName, `You are not allowed to kill all code instances!`, "red");
 			return;
 		}
-		if (playerArgument["help"]||playerArgument["?"]) {
+		if (playerArgument["help"] || playerArgument["?"]) {
 			sendMessage(playerName, `The kill all command kills all code instances for all players.`, "green");
 			return;
 		}
@@ -201,7 +204,7 @@ process.on("message", (msg) => {
 			sendMessage(playerName, `You are not allowed to toggle antigrief!`, "red");
 			return;
 		}
-		if (playerArgument["help"]||playerArgument["?"]) {
+		if (playerArgument["help"] || playerArgument["?"]) {
 			sendMessage(playerName, `The grief command toggles antigrief, limiting certain actions for non-ops.`, "green");
 			return;
 		}
@@ -216,8 +219,12 @@ process.on("message", (msg) => {
 			sendMessage(playerName, `You are not allowed to toggle replace_world!`, "red");
 			return;
 		}
-		if (playerArgument["help"]||playerArgument["?"]) {
-			sendMessage(playerName, `The replace_world command toggles the replace_world setting, determining whether to replace the world when the server restarts.`, "green");
+		if (playerArgument["help"] || playerArgument["?"]) {
+			sendMessage(
+				playerName,
+				`The replace_world command toggles the replace_world setting, determining whether to replace the world when the server restarts.`,
+				"green",
+			);
 			return;
 		}
 		settings.replace_world = !settings.replace_world;
@@ -296,8 +303,8 @@ process.on("message", (msg) => {
 
 	if (/^shadowban /i.test(playerCommand)) {
 		if (playerArgument["help"] || playerArgument["?"]) {
-				sendMessage(playerName, `The shadowban command sets a player's gamemode to spectator and enables player-specific restrictions like antigrief.`, "green");
-				return;
+			sendMessage(playerName, `The shadowban command sets a player's gamemode to spectator and enables player-specific restrictions like antigrief.`, "green");
+			return;
 		}
 		shadowban(playerName, playerCommand, isOp);
 		return;
@@ -305,9 +312,9 @@ process.on("message", (msg) => {
 
 	if (/^unshadowban /i.test(playerCommand)) {
 		if (playerArgument["help"] || playerArgument["?"]) {
-				sendMessage(playerName, `The unshadowban command removes a player from the shadowbanned list and restores their gamemode.`, "green");
-				return;
-			}
+			sendMessage(playerName, `The unshadowban command removes a player from the shadowbanned list and restores their gamemode.`, "green");
+			return;
+		}
 		const unshadowbanPlayerSelector = playerCommand.split(" ")[1];
 		let unshadowbanPlayer = unshadowbanPlayerSelector;
 
@@ -369,10 +376,13 @@ process.on("message", (msg) => {
 	}
 
 	const scripts = fs.readdirSync(path.join("./public/", folderName)).filter((f) => !f.startsWith(".")); // exclude .DS_Store and other hidden files
-	const templates = fs.readdirSync(path.join("./templates/")).filter((f) => !f.startsWith(".")).filter((f) => fs.statSync(path.join("./templates/", f)).isDirectory()); // exclude .DS_Store and other hidden files, ensuring it's a directory and not a file
+	const templates = fs
+		.readdirSync(path.join("./templates/"))
+		.filter((f) => !f.startsWith("."))
+		.filter((f) => fs.statSync(path.join("./templates/", f)).isDirectory()); // exclude .DS_Store and other hidden files, ensuring it's a directory and not a file
 
 	if (/^list$/i.test(playerCommand)) {
-		if (playerArgument["help"]||playerArgument["?"]) {
+		if (playerArgument["help"] || playerArgument["?"]) {
 			sendMessage(playerName, `The list command lists all scripts in the specified folder.`, "green");
 			if (isOp && !playerArgument["in"]) {
 				sendMessage(playerName, `You can use the --in flag to specify a different folder.`, "blue");
@@ -386,12 +396,12 @@ process.on("message", (msg) => {
 
 	if (/^create /i.test(playerCommand)) {
 		if (playerArgument["help"] || playerArgument["?"]) {
-				sendMessage(playerName, `The create command creates a new script based on a template.`, "green");
-				if (isOp && !playerArgument["in"]) {
-					sendMessage(playerName, `You can use the --in flag to specify a different folder.`, "blue");
-				}
-				return;
+			sendMessage(playerName, `The create command creates a new script based on a template.`, "green");
+			if (isOp && !playerArgument["in"]) {
+				sendMessage(playerName, `You can use the --in flag to specify a different folder.`, "blue");
 			}
+			return;
+		}
 		const createParts = playerCommand.split(" ");
 
 		if (createParts.length !== 3) {
@@ -427,7 +437,6 @@ process.on("message", (msg) => {
 	}
 
 	const playerFunction = playerCommand.split("(")[0];
-	
 
 	if (scripts.includes(playerFunction)) {
 		if (playerArgument["help"] || playerArgument["?"]) {
@@ -523,7 +532,12 @@ process.on("message", (msg) => {
 		player[playerName].processes.push(proc);
 	} else {
 		sendMessage(playerName, `Script "${playerFunction}" does not exist in "./public/${folderName}"!`, "red");
-		sendMessage(playerName, `Use '${prefix}create ${templates[0]} ${playerFunction}' to create a new script based on the "${templates[0]}" template.`, "green", `${prefix}create ${templates[0]} ${playerFunction}`);
+		sendMessage(
+			playerName,
+			`Use '${prefix}create ${templates[0]} ${playerFunction}' to create a new script based on the "${templates[0]}" template.`,
+			"green",
+			`${prefix}create ${templates[0]} ${playerFunction}`,
+		);
 		return;
 	}
 });

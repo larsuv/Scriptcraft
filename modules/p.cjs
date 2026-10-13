@@ -125,11 +125,14 @@ module.exports = {
 		const os = s;
 		s = function (data, conditionless) {
 			pending++;
-			setTimeout(() => {
-				os(data, conditionless);
-				pending--;
-				if (pending === 0) finish();
-			}, time * ((buildSpeed==0) ? 1 : (buildSpeed * 50)));
+			setTimeout(
+				() => {
+					os(data, conditionless);
+					pending--;
+					if (pending === 0) finish();
+				},
+				time * (buildSpeed == 0 ? 1 : buildSpeed * 50),
+			);
 			time++;
 		};
 
