@@ -129,7 +129,7 @@ module.exports = {
 				os(data, conditionless);
 				pending--;
 				if (pending === 0) finish();
-			}, time * ((buildSpeed==0) ? 1 : (buildSpeed * 50)));
+			}, time * ((buildSpeed==0) ? 1 : buildSpeed));
 			time++;
 		};
 
