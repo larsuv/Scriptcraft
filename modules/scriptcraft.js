@@ -128,6 +128,7 @@ process.on("message", (msg) => {
 			return;
 		}
 		sendMessage(playerName, `Available commands:`, "green");
+		sendMessage(playerName, `${prefix}1+1 - Run a test script for diagnostic purposes`, "green", `${prefix}1+1`);
 		sendMessage(playerName, `${prefix}help - Show this message`, "green", `${prefix}help`);
 		sendMessage(playerName, `${prefix}kill - Kill all code instances for yourself`, "green", `${prefix}kill`);
 		sendMessage(playerName, `${prefix}create TEMPLATE SCRIPTNAME - Create a new script based on a template`, "green", `${prefix}create js SCRIPTNAME`); //as there is only one template, this is the only valid command for now
@@ -233,7 +234,7 @@ process.on("message", (msg) => {
 		return;
 	}
 
-	const shadowban = function (playerName = "Server", playerCommand = "", isOp = false) {
+	const shadowban = (playerName = "Server", playerCommand = "", isOp = false) => {
 		if (!isOp) {
 			sendMessage(playerName, `You are not allowed to shadowban players!`, "red");
 			return;
@@ -394,14 +395,7 @@ process.on("message", (msg) => {
 		return;
 	}
 
-	if (/^create /i.test(playerCommand)) {
-		if (playerArgument["help"] || playerArgument["?"]) {
-			sendMessage(playerName, `The create command creates a new script based on a template.`, "green");
-			if (isOp && !playerArgument["in"]) {
-				sendMessage(playerName, `You can use the --in flag to specify a different folder.`, "blue");
-			}
-			return;
-		}
+	const create = (playerCommand, playerName, folderName, scripts) => {
 		const createParts = playerCommand.split(" ");
 
 		if (createParts.length !== 3) {
@@ -413,7 +407,7 @@ process.on("message", (msg) => {
 		const createName = createParts[2];
 
 		if (scripts.includes(createName)) {
-			sendMessage(playerName, `You already have a script named "${createName}"!`, "red");
+			sendMessage(playerName, `You already have a script named "${createName} in "./public/${folderName}/${createName}"!`, "yellow");
 			return;
 		}
 
@@ -434,18 +428,23 @@ process.on("message", (msg) => {
 		sendMessage(playerName, `Created new script in "./public/${folderName}/${createName}" based on "${templateName}"!`, "green");
 		spawn("chmod", ["777", "-R", "../", "server.jar"], { cwd: "./minecraft" });
 		return;
-	}
+	};
 
-	const playerFunction = playerCommand.split("(")[0];
-
-	if (scripts.includes(playerFunction)) {
+	if (/^create /i.test(playerCommand)) {
 		if (playerArgument["help"] || playerArgument["?"]) {
-			sendMessage(playerName, `The ${playerFunction} command runs the script located in "./public/${folderName}/${playerFunction}".`, "green");
+			sendMessage(playerName, `The create command creates a new script based on a template.`, "green");
 			if (isOp && !playerArgument["in"]) {
 				sendMessage(playerName, `You can use the --in flag to specify a different folder.`, "blue");
 			}
 			return;
 		}
+		create(playerCommand, playerName, folderName, scripts);
+		return;
+	}
+
+	const playerFunction = playerCommand.split("(")[0];
+
+	const run = (playerCommand, playerName, folderName, playerFunction) => {
 		const playerArguments = JSON.parse("[" + (playerCommand.split("(")?.[1] || ")").replace(")", "]"));
 		const scriptcraftArguments = {
 			owner: folderName,
@@ -530,6 +529,45 @@ process.on("message", (msg) => {
 			sendMessage(playerName, err.toString(), "red");
 		});
 		player[playerName].processes.push(proc);
+	}
+
+	if(/^1\+1$/.test(playerCommand)) {
+		if (playerArgument["help"] || playerArgument["?"]) {
+			sendMessage(playerName, `The test command runs a test script for diagnostic purposes.`, "green");
+			return;
+		}
+		sendMessage(playerName, `Scriptcraft is running`, "green");
+		sendMessage(playerName, `Running test...`, "green");
+		if (!player["Server"]) {
+			player["Server"] = {
+				processes: [],
+			};
+		}
+		
+		try {
+			create("create js test", playerName, "Server", fs.readdirSync(path.join("./public/", "Server")).filter((f) => !f.startsWith(".")));
+		} catch (e) {
+			sendMessage(playerName, `Error occurred while creating test script: ${e.message}`, "red");
+			return;
+		}
+		try{
+			run("test", playerName, "Server", "test");
+		} catch (e) {
+			sendMessage(playerName, `Error occurred while running test script: ${e.message}`, "red");
+			return;
+		}
+		return;
+	}
+
+	if (scripts.includes(playerFunction)) {
+		if (playerArgument["help"] || playerArgument["?"]) {
+			sendMessage(playerName, `The ${playerFunction} command runs the script located in "./public/${folderName}/${playerFunction}".`, "green");
+			if (isOp && !playerArgument["in"]) {
+				sendMessage(playerName, `You can use the --in flag to specify a different folder.`, "blue");
+			}
+			return;
+		}
+		run(playerCommand, playerName, folderName, playerFunction);
 	} else {
 		sendMessage(playerName, `Script "${playerFunction}" does not exist in "./public/${folderName}"!`, "red");
 		sendMessage(

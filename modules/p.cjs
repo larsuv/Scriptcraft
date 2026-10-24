@@ -181,14 +181,20 @@ module.exports = {
 		const x = parseFloat(this.Drone.initLocation[0]) + parseFloat(this.Drone.location[0]);
 		const y = parseFloat(this.Drone.initLocation[1]) + parseFloat(this.Drone.location[1]);
 		const z = parseFloat(this.Drone.initLocation[2]) + parseFloat(this.Drone.location[2]);
-		if (door_type.includes("door")) {
-			s(
-				`fill ~${Math.trunc(x)} ~${Math.trunc(y)} ~${Math.trunc(z)} ~${Math.trunc(x)} ~${Math.trunc(y)} ~${Math.trunc(z)} ${door_type + `[half=lower, facing=${dir}]`}`,
-			);
-			s(
-				`fill ~${Math.trunc(x)} ~${Math.trunc(y + 1)} ~${Math.trunc(z)} ~${Math.trunc(x)} ~${Math.trunc(y + 1)} ~${Math.trunc(z)} ${door_type + `[half=upper, facing=${dir}]`}`,
-			);
+		if (!door_type.includes("door")) {
+			if (door_type.includes("planks")) {
+				door_type = door_type.replace("planks", "door");
+			}
+			else {
+				door_type = door_type + "_door";
+			}
 		}
+		s(
+			`fill ~${Math.trunc(x)} ~${Math.trunc(y)} ~${Math.trunc(z)} ~${Math.trunc(x)} ~${Math.trunc(y)} ~${Math.trunc(z)} ${door_type + `[half=lower, facing=${dir}]`}`,
+		);
+		s(
+			`fill ~${Math.trunc(x)} ~${Math.trunc(y + 1)} ~${Math.trunc(z)} ~${Math.trunc(x)} ~${Math.trunc(y + 1)} ~${Math.trunc(z)} ${door_type + `[half=upper, facing=${dir}]`}`,
+		);
 		return this;
 	},
 	box: function (block = "air", rechts = 1, boven = 1, diepte = 1) {

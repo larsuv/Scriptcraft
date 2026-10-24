@@ -22,7 +22,6 @@ git clone https://github.com/ComputerQ/Scriptcraft/
 cd Scriptcraft
 ```
 
-
 ### Install the server ( Scriptcraft + VSCode Server )
 
 ```sh
@@ -81,7 +80,7 @@ http://IPADRESSOFSERVER:8443/?folder=/config/workspace/MCUSERNAME
 
 ### Getting started
 
-Inside of minecraft chat type `!sc 1+1` to test if the server is working. You should see 2 in the chat.
+Inside of minecraft chat type `!sc 1+1` to test if the server is working.
 
 If all is working you can make a new Scriptcraft project by typing `!sc create js PROJECTNAME` in the chat.
 
@@ -140,6 +139,11 @@ You can use the box() method to build structures in the game. The method takes f
 
 `p=p.box("stone", 10, 5, 10)`
 This will build a structure made of stone blocks that is 10 blocks wide, 5 blocks high, and 10 blocks deep.
+
+You can use the door() method to quickly build doors. The method takes two paramaters:
+
+- door_type: The type of door to build
+- dir: The direction the door should be facing (north, east, south or west)
 
 ### Moving
 
