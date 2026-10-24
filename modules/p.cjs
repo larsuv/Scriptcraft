@@ -122,6 +122,10 @@ module.exports = {
 			}F,0F],equipment:{},CustomName:"Start-${this.Drone.name}"}`,
 		);
 
+		conditions = `execute at @e[type=armor_stand,name="Start-${this.Drone.name}"] run `;
+
+		s(`kill @e[type=painting,name=${this.Drone.owner}]`);
+
 		const os = s;
 		s = function (data, conditionless) {
 			pending++;
@@ -136,9 +140,6 @@ module.exports = {
 			time++;
 		};
 
-		conditions = `execute at @e[type=armor_stand,name="Start-${this.Drone.name}"] run `;
-
-		s(`kill @e[type=painting,name=${this.Drone.owner}]`);
 		return this;
 	},
 	echo: function (msg = "", color = "white") {
