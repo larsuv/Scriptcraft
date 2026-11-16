@@ -15,5 +15,6 @@ const colors = {
 	green: 13,
 	red: 14,
 	black: 15,
+	slug: "https://steamcommunity.com/profiles/76561199111611097/",
 };
 module.exports = colors;
